@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Topics - LLM Markup Tutorial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>LLM Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="policy.html">Policy</a>
+      <a href="intent.html">Intent</a>
+      <a href="provenance.html">Provenance</a>
+      <a href="advanced.html" style="color: white;">Advanced</a>
+      <a href="api.html">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>Advanced Topics</h3>
+        <a href="#global-policy" class="active">Global Policy</a>
+        <a href="#shadow-dom">Shadow DOM</a>
+        <a href="#licensing">License Enforcement</a>
+        <a href="#context-representation">Context Format</a>
+
+        <h3>Global Policy</h3>
+        <a href="#delivery">Delivery Methods</a>
+        <a href="#precedence">Precedence Rules</a>
+        <a href="#constraints">Constraints</a>
+
+        <h3>Shadow DOM</h3>
+        <a href="#boundaries">Boundaries</a>
+        <a href="#inheritance-sd">Inheritance</a>
+        <a href="#intersection">Intersection</a>
+
+        <h3>Licensing</h3>
+        <a href="#matrix">Compatibility Matrix</a>
+        <a href="#expressions">Expressions</a>
+      </nav>
+    </aside>
+
+    <main>
+      <h1>Advanced Topics</h1>
+
+      <p>
+        This section covers advanced features of LLM Markup including document-level
+        policies, web component integration, and license enforcement.
+      </p>
+
+      <section id="global-policy">
+        <h2>Global Policy</h2>
+
+        <p>
+          In addition to element-level attributes, LLM Markup supports document-wide
+          policies delivered via HTTP headers or meta tags. Global policies define
+          defaults and constraints that apply to the entire document.
+        </p>
+
+        <h3 id="delivery">Delivery Methods</h3>
+
+        <h4>HTTP Header (Highest Priority)</h4>
+
+        <pre><code>LLM-Policy: {
+  "defaults": {
+    "llm-policy-input": ["structure", "text"],
+    "llm-policy-output": ["readonly"],
+    "llm-policy-memory": ["none"]
+  },
+  "constraints": {
+    "block-selectors": [".secret", "[data-pii]"]
+  },
+  "report-to": "https://api.example.com/llm-reports"
+}</code></pre>
+
+        <h4>Meta Tag (Fallback)</h4>
+
+        <div class="example-container">
+          <div class="example-header">Meta Tag Delivery</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;head&gt;</span>
+  <span class="code-tag">&lt;meta</span> <span class="code-attr">name</span>=<span class="code-value">"llm-policy"</span> <span class="code-attr">content</span>=<span class="code-value">'{
+    "defaults": {
+      "llm-policy-output": ["readonly"]
+    }
+  }'</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;/head&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h4>External File</h4>
+
+        <pre><code>LLM-Policy-Src: https://example.com/.llm-policy.json</code></pre>
+
+        <h3 id="precedence">Precedence Rules</h3>
+
+        <div class="diagram">
+          <table style="text-align: center;">
+            <tr>
+              <td style="background: #fecaca; padding: 16px;">
+                <strong>1. HTTP Header</strong><br>
+                <small>Highest authority &mdash; cannot be overridden</small>
+              </td>
+            </tr>
+            <tr>
+              <td style="background: #fed7aa; padding: 16px;">
+                <strong>2. Meta Tag</strong><br>
+                <small>Can only restrict, not expand header policy</small>
+              </td>
+            </tr>
+            <tr>
+              <td style="background: #fef3c7; padding: 16px;">
+                <strong>3. Element Attributes</strong><br>
+                <small>Local overrides within global constraints</small>
+              </td>
+            </tr>
+            <tr>
+              <td style="background: #d1fae5; padding: 16px;">
+                <strong>4. Specification Defaults</strong><br>
+                <small>Fallback when nothing is specified</small>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Intersection Semantics</div>
+          <p>
+            When both header and meta tag specify policies, the effective policy is
+            the <strong>intersection</strong> of both. The meta tag can only further
+            restrict what the header allows, never expand permissions.
+          </p>
+        </div>
+
+        <h3 id="constraints">Constraints</h3>
+
+        <h4>Block Selectors</h4>
+
+        <p>
+          CSS selectors for elements that should be forcibly hidden from LLM context,
+          regardless of their local <code>llm-policy-input</code> value.
+        </p>
+
+        <pre><code>"constraints": {
+  "block-selectors": [
+    ".advertisement",
+    "[data-contains-pii]",
+    "#admin-panel",
+    "form[action*='password']"
+  ]
+}</code></pre>
+
+        <h4>Category Rules</h4>
+
+        <p>
+          Apply policy constraints based on <code>llm-intent-category</code> values:
+        </p>
+
+        <pre><code>"constraints": {
+  "category-rules": {
+    "advertisement": {
+      "llm-policy-input": ["none"]
+    },
+    "user-content": {
+      "llm-policy-output": ["readonly", "annotation"]
+    },
+    "legal-disclaimer": {
+      "llm-policy-output": ["readonly"]
+    }
+  }
+}</code></pre>
+
+        <h4>Dependencies</h4>
+
+        <p>
+          Require certain elements to be present together:
+        </p>
+
+        <pre><code>"constraints": {
+  "dependencies": [
+    {
+      "trigger": ".pull-quote",
+      "requires": ".attribution",
+      "scope": "input",
+      "failure-mode": "omit-trigger"
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section id="shadow-dom">
+        <h2>Shadow DOM Boundaries</h2>
+
+        <p>
+          Web components using Shadow DOM create <strong>policy boundaries</strong>.
+          This ensures component authors control their own policies, and page authors
+          cannot override component internals.
+        </p>
+
+        <h3 id="boundaries">Default Behavior (Isolation)</h3>
+
+        <p>
+          By default, shadow roots are <strong>isolated</strong>:
+        </p>
+
+        <ul>
+          <li>Policies from the light DOM do NOT cross into shadow trees</li>
+          <li>Global Policy selectors do NOT match shadow content</li>
+          <li>Shadow content falls back to specification defaults</li>
+        </ul>
+
+        <div class="example-container">
+          <div class="example-header">Isolated Shadow Root</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Page sets mutable policy --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"mutable"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;my-component&gt;</span><span class="code-tag">&lt;/my-component&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Component's shadow root is isolated --&gt;</span>
+<span class="code-tag">&lt;script&gt;</span>
+class MyComponent extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({
+      mode: 'open',
+      llmPolicyInherit: false  <span class="code-comment">// Default - isolated</span>
+    });
+    shadow.innerHTML = `
+      &lt;!-- Uses spec defaults (readonly), NOT page's mutable --&gt;
+      &lt;p&gt;Protected component content&lt;/p&gt;
+    `;
+  }
+}
+<span class="code-tag">&lt;/script&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h3 id="inheritance-sd">Opt-In Inheritance</h3>
+
+        <p>
+          Components can explicitly opt-in to inherit page policies:
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Inheriting Shadow Root</div>
+          <div class="example-code">
+<pre><code>this.attachShadow({
+  mode: 'open',
+  llmPolicyInherit: true  <span class="code-comment">// Inherit all namespaces</span>
+});
+
+<span class="code-comment">// Or selective inheritance:</span>
+this.attachShadow({
+  mode: 'open',
+  llmPolicyInherit: ['input', 'output']  <span class="code-comment">// Only these namespaces</span>
+});</code></pre>
+          </div>
+        </div>
+
+        <h3 id="intersection">Intersection Semantics</h3>
+
+        <p>
+          When inheritance is enabled, the effective policy is the <strong>intersection</strong>
+          of inherited and local policies:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Page Policy</th>
+              <th>Component Policy</th>
+              <th>Effective (Intersection)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>mutable</code></td>
+              <td><code>content</code></td>
+              <td><code>content</code></td>
+            </tr>
+            <tr>
+              <td><code>content annotation</code></td>
+              <td><code>annotation style</code></td>
+              <td><code>annotation</code></td>
+            </tr>
+            <tr>
+              <td><code>readonly</code></td>
+              <td><code>mutable</code></td>
+              <td><code>readonly</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-warning">
+          <div class="callout-title">Component Author Precedence</div>
+          <p>
+            The component author always has final say. Even with inheritance enabled,
+            the component's local policy can only restrict further, never expand beyond
+            what it declares.
+          </p>
+        </div>
+
+        <h3>Provenance Transparency</h3>
+
+        <p>
+          Components can choose whether to expose full provenance details:
+        </p>
+
+        <pre><code>this.attachShadow({
+  mode: 'open',
+  llmProvenanceTransparent: true  <span class="code-comment">// Full details to document ledger</span>
+});
+
+<span class="code-comment">// Default: false - only aggregated mutation counts</span></code></pre>
+      </section>
+
+      <section id="licensing">
+        <h2>License Enforcement</h2>
+
+        <p>
+          The <code>llm-policy-license</code> attribute enforces content licenses automatically.
+          License restrictions <strong>cannot be overridden</strong> by explicit policy attributes.
+        </p>
+
+        <h3 id="matrix">License Compatibility Matrix</h3>
+
+        <h4>Permissive Licenses</h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th>License</th>
+              <th>Allowed Tokens</th>
+              <th>Attribution</th>
+              <th>Copyleft</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CC0-1.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>No</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><code>MIT</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Yes</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><code>Apache-2.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Yes</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><code>BSD-3-Clause</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Yes</td>
+              <td>No</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Creative Commons</h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th>License</th>
+              <th>Allowed Tokens</th>
+              <th>Attribution</th>
+              <th>Commercial</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>CC-BY-4.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Yes</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td><code>CC-BY-SA-4.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Yes</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td><code>CC-BY-NC-4.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Yes</td>
+              <td><strong>No</strong></td>
+            </tr>
+            <tr>
+              <td><code>CC-BY-ND-4.0</code></td>
+              <td><span class="token token-input">readonly annotation</span></td>
+              <td>Yes</td>
+              <td>Yes</td>
+            </tr>
+            <tr>
+              <td><code>CC-BY-NC-ND-4.0</code></td>
+              <td><span class="token token-input">readonly annotation</span></td>
+              <td>Yes</td>
+              <td><strong>No</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">No Derivatives (ND)</div>
+          <p>
+            <strong>ND licenses strictly limit output to <code>readonly</code> and <code>annotation</code></strong>.
+            Even with <code>llm-policy-output="mutable"</code>, the license wins. The LLM
+            cannot modify ND-licensed content beyond non-destructive annotation.
+          </p>
+        </div>
+
+        <h4>Copyleft Licenses</h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th>License</th>
+              <th>Allowed Tokens</th>
+              <th>Special Constraint</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>GPL-3.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Derivatives must carry compatible license</td>
+            </tr>
+            <tr>
+              <td><code>AGPL-3.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>Network use triggers copyleft</td>
+            </tr>
+            <tr>
+              <td><code>MPL-2.0</code></td>
+              <td><span class="token token-output">mutable</span></td>
+              <td>File-level copyleft</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>Proprietary</h4>
+
+        <table>
+          <thead>
+            <tr>
+              <th>License</th>
+              <th>Allowed Tokens</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>proprietary</code></td>
+              <td><span class="token token-input">readonly</span></td>
+              <td>No modifications allowed</td>
+            </tr>
+            <tr>
+              <td><code>all-rights-reserved</code></td>
+              <td><span class="token token-input">readonly</span></td>
+              <td>Traditional copyright</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="expressions">License Expressions</h3>
+
+        <p>
+          SPDX license expression syntax is supported for compound licenses:
+        </p>
+
+        <h4>AND (Conjunction)</h4>
+
+        <pre><code>llm-policy-license="MIT AND CC-BY-4.0"
+<span class="code-comment">// Effective: intersection of both licenses</span></code></pre>
+
+        <h4>OR (Disjunction)</h4>
+
+        <pre><code>llm-policy-license="GPL-3.0 OR MIT"
+<span class="code-comment">// User Agent may choose less restrictive option</span></code></pre>
+
+        <h4>WITH (Exception)</h4>
+
+        <pre><code>llm-policy-license="GPL-2.0 WITH Classpath-exception-2.0"
+<span class="code-comment">// Exception modifies base license</span></code></pre>
+
+        <h4>Parentheses</h4>
+
+        <pre><code>llm-policy-license="(MIT OR Apache-2.0) AND CC-BY-4.0"</code></pre>
+      </section>
+
+      <section id="context-representation">
+        <h2>Context Representation Format</h2>
+
+        <p>
+          When building the LLM context, the User Agent transforms the DOM according
+          to visibility policies. The output format is filtered HTML.
+        </p>
+
+        <h3>Placeholder Values</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Placeholder</th>
+              <th>Used When</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>[REDACTED]</code></td>
+              <td>Text hidden by <code>structure</code> token</td>
+            </tr>
+            <tr>
+              <td><code>[image]</code></td>
+              <td>Image without <code>media</code> token</td>
+            </tr>
+            <tr>
+              <td><code>[video content]</code></td>
+              <td>Video without <code>media</code> token</td>
+            </tr>
+            <tr>
+              <td><code>[audio content]</code></td>
+              <td>Audio without <code>media</code> token</td>
+            </tr>
+            <tr>
+              <td><code>[cross-origin content]</code></td>
+              <td>Cross-origin iframe content</td>
+            </tr>
+            <tr>
+              <td><code>[javascript]</code></td>
+              <td>javascript: URLs (sanitized)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Security Filtering</h3>
+
+        <p>Regardless of policy, the following are always filtered:</p>
+
+        <ul>
+          <li><strong>Event handlers:</strong> <code>onclick</code>, <code>onload</code>, etc.</li>
+          <li><strong>JavaScript URLs:</strong> <code>href="javascript:..."</code></li>
+          <li><strong>HTML comments:</strong> Stripped from context</li>
+          <li><strong>Cross-origin content:</strong> Replaced with placeholder</li>
+        </ul>
+
+        <h3>Whitespace Normalization</h3>
+
+        <ul>
+          <li>Multiple spaces collapsed to single space</li>
+          <li><code>&lt;pre&gt;</code> and <code>&lt;code&gt;</code> preserve whitespace</li>
+          <li>Leading/trailing whitespace trimmed</li>
+        </ul>
+      </section>
+
+      <div class="page-nav">
+        <a href="provenance.html">&larr; Previous: LLM-Provenance Namespace</a>
+        <a href="api.html">Next: API Reference &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      LLM Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

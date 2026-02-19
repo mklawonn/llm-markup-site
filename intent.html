@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM-Intent Namespace - LLM Markup Tutorial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>LLM Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="policy.html">Policy</a>
+      <a href="intent.html" style="color: white;">Intent</a>
+      <a href="provenance.html">Provenance</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="api.html">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>Intent Namespace</h3>
+        <a href="#overview" class="active">Overview</a>
+        <a href="#category">Category</a>
+        <a href="#importance">Importance</a>
+        <a href="#entity">Entity</a>
+        <a href="#instruction">Instruction</a>
+        <a href="#prompt-construction">Prompt Construction</a>
+
+        <h3>Category Lexicon</h3>
+        <a href="#lexicon-structure">Information Structure</a>
+        <a href="#lexicon-argument">Argumentation</a>
+        <a href="#lexicon-technical">Technical</a>
+        <a href="#lexicon-narrative">Narrative</a>
+
+        <h3>Advanced</h3>
+        <a href="#tone-output">Tone & Output</a>
+        <a href="#function-workflow">Function & Workflow</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="namespace-header namespace-intent">
+        <h2>LLM-Intent Namespace</h2>
+        <p>Semantic guidance for the LLM. Influences how content is interpreted and processed.</p>
+      </div>
+
+      <section id="overview">
+        <h2>Overview</h2>
+
+        <p>
+          The <strong>llm-intent</strong> namespace provides semantic hints that guide how the
+          LLM interprets and handles content. Unlike policy attributes (which are hard constraints),
+          intent attributes are <strong>soft guidance</strong> &mdash; they influence the LLM's
+          behavior but don't mechanistically block actions.
+        </p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">How Intent Works</div>
+          <p>
+            The User Agent <strong>deterministically</strong> translates intent attributes into
+            system prompt fragments. The LLM receives these as context, helping it understand
+            the content's purpose and appropriate handling.
+          </p>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Purpose</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>llm-intent-category</code></td>
+              <td>Semantic classification</td>
+              <td><code>"summary"</code>, <code>"legal-disclaimer"</code></td>
+            </tr>
+            <tr>
+              <td><code>llm-intent-importance</code></td>
+              <td>Priority level</td>
+              <td><code>"critical"</code>, <code>"background"</code></td>
+            </tr>
+            <tr>
+              <td><code>llm-intent-entity</code></td>
+              <td>Canonical reference</td>
+              <td>Wikidata URI</td>
+            </tr>
+            <tr>
+              <td><code>llm-intent-instruction</code></td>
+              <td>Custom handling</td>
+              <td>Free-form text</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="category">
+        <h2>Category</h2>
+
+        <p>
+          The <code>llm-intent-category</code> attribute classifies content using a
+          <strong>Standardized Lexicon</strong>. Each category maps to an optimized prompt
+          that tells the LLM how to handle that type of content.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Semantic Categories</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Summary: Condensed version of longer content --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"summary"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>TL;DR: The article explains three key points...<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Legal Disclaimer: Do not paraphrase --&gt;</span>
+<span class="code-tag">&lt;footer</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"legal-disclaimer"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Terms and conditions apply. See full terms.<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/footer&gt;</span>
+
+<span class="code-comment">&lt;!-- Satire: Do not interpret literally --&gt;</span>
+<span class="code-tag">&lt;article</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"satire"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;h2&gt;</span>Local Man Discovers Water Is Wet<span class="code-tag">&lt;/h2&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>In a stunning development...<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h3 id="lexicon-structure">Information Structure Categories</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Generated Prompt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>summary</code></td>
+              <td>"This is a summary. Treat it as a condensed version of longer content."</td>
+            </tr>
+            <tr>
+              <td><code>definition</code></td>
+              <td>"This is a definition. Treat it as an authoritative explanation of a term."</td>
+            </tr>
+            <tr>
+              <td><code>example</code></td>
+              <td>"This is an example. Use it to illustrate or clarify related concepts."</td>
+            </tr>
+            <tr>
+              <td><code>introduction</code></td>
+              <td>"This is an introduction. Use it to establish context for the content that follows."</td>
+            </tr>
+            <tr>
+              <td><code>conclusion</code></td>
+              <td>"This is a conclusion. Treat it as a synthesis of the preceding content."</td>
+            </tr>
+            <tr>
+              <td><code>outline</code></td>
+              <td>"This is an outline. Treat it as a structural overview."</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="lexicon-argument">Argumentation Categories</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Generated Prompt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>claim</code></td>
+              <td>"This is a claim. Evaluate it critically and note it may be contested."</td>
+            </tr>
+            <tr>
+              <td><code>evidence</code></td>
+              <td>"This is evidence. Use it to support or refute claims."</td>
+            </tr>
+            <tr>
+              <td><code>counter-argument</code></td>
+              <td>"This is a counter-argument. Consider it as opposition to a prior claim."</td>
+            </tr>
+            <tr>
+              <td><code>opinion</code></td>
+              <td>"This is an opinion. Distinguish it from factual statements."</td>
+            </tr>
+            <tr>
+              <td><code>satire</code></td>
+              <td>"This is satire. Do not interpret it literally."</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="lexicon-technical">Technical Categories</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Generated Prompt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>code-block</code></td>
+              <td>"This is source code. Preserve formatting and syntax."</td>
+            </tr>
+            <tr>
+              <td><code>api-spec</code></td>
+              <td>"This is an API specification. Treat it as authoritative technical reference."</td>
+            </tr>
+            <tr>
+              <td><code>warning</code></td>
+              <td>"This is a warning. Highlight its importance to the user."</td>
+            </tr>
+            <tr>
+              <td><code>legal-disclaimer</code></td>
+              <td>"This is a legal disclaimer. Do not paraphrase or summarize."</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3 id="lexicon-narrative">Narrative Categories</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Generated Prompt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>fiction</code></td>
+              <td>"This is fiction. Do not treat it as factual."</td>
+            </tr>
+            <tr>
+              <td><code>transcript</code></td>
+              <td>"This is a transcript. Preserve speaker attributions."</td>
+            </tr>
+            <tr>
+              <td><code>instruction</code></td>
+              <td>"This is an instruction. Present it as actionable guidance."</td>
+            </tr>
+            <tr>
+              <td><code>quote</code></td>
+              <td>"This is a quote. Preserve it exactly and attribute it properly."</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Custom Categories</h3>
+
+        <p>
+          If you use a category not in the standardized lexicon, the User Agent applies a
+          <strong>fallback template</strong>:
+        </p>
+
+        <pre><code>"Treat the following content as a(n) [your-category]."</code></pre>
+
+        <div class="example-container">
+          <div class="example-header">Example: Custom Category</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;section</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"recipe"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;h2&gt;</span>Chocolate Chip Cookies<span class="code-tag">&lt;/h2&gt;</span>
+  ...
+<span class="code-tag">&lt;/section&gt;</span>
+
+<span class="code-comment">&lt;!-- Generates: "Treat the following content as a(n) recipe." --&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="importance">
+        <h2>Importance</h2>
+
+        <p>
+          The <code>llm-intent-importance</code> attribute guides the LLM's attention when
+          context is limited. Higher importance content is prioritized; lower importance
+          content may be truncated or ignored.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Level</th>
+              <th>Behavior</th>
+              <th>Generated Prompt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="token" style="background: #fecaca;">critical</span></td>
+              <td>MUST be preserved</td>
+              <td>"Pay maximum attention to the following content. It is essential for the user's task."</td>
+            </tr>
+            <tr>
+              <td><span class="token" style="background: #fed7aa;">high</span></td>
+              <td>Prioritized</td>
+              <td>"Prioritize this content."</td>
+            </tr>
+            <tr>
+              <td><span class="token" style="background: #e5e7eb;">normal</span></td>
+              <td>Standard (default)</td>
+              <td><em>(no additional prompt)</em></td>
+            </tr>
+            <tr>
+              <td><span class="token" style="background: #d1fae5;">low</span></td>
+              <td>Supplementary</td>
+              <td>"This content is supplementary. You may ignore it if context is limited."</td>
+            </tr>
+            <tr>
+              <td><span class="token" style="background: #dbeafe;">background</span></td>
+              <td>Background only</td>
+              <td>"This is background information only. Do not focus on it unless explicitly asked."</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="example-container">
+          <div class="example-header">Example: Mixed Importance Levels</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;article&gt;</span>
+  <span class="code-comment">&lt;!-- Critical: Always include --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span><span class="code-tag">&lt;strong&gt;</span>WARNING:<span class="code-tag">&lt;/strong&gt;</span> Server maintenance at midnight.<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Normal: Standard priority --&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Regular article content goes here...<span class="code-tag">&lt;/p&gt;</span>
+
+  <span class="code-comment">&lt;!-- Background: Ignore unless asked --&gt;</span>
+  <span class="code-tag">&lt;aside</span> <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"background"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>Historical note: This feature was added in v2.3...<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/aside&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Token Limits</div>
+          <p>
+            When the LLM context window is limited, the User Agent uses importance levels
+            to decide what to include. <code>critical</code> content is always included;
+            <code>background</code> content is dropped first.
+          </p>
+        </div>
+      </section>
+
+      <section id="entity">
+        <h2>Entity</h2>
+
+        <p>
+          The <code>llm-intent-entity</code> attribute links text to a canonical entity URI
+          (like Wikidata). This helps the LLM disambiguate terms and connect to knowledge bases.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Entity Disambiguation</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;p&gt;</span>
+  <span class="code-comment">&lt;!-- Link to Wikidata entity for "Apple Inc." --&gt;</span>
+  <span class="code-tag">&lt;span</span> <span class="code-attr">llm-intent-entity</span>=<span class="code-value">"https://www.wikidata.org/wiki/Q312"</span><span class="code-tag">&gt;</span>
+    Apple
+  <span class="code-tag">&lt;/span&gt;</span>
+  announced new products today.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-tag">&lt;p&gt;</span>
+  <span class="code-comment">&lt;!-- Link to Wikidata entity for the fruit "Apple" --&gt;</span>
+  I ate an
+  <span class="code-tag">&lt;span</span> <span class="code-attr">llm-intent-entity</span>=<span class="code-value">"https://www.wikidata.org/wiki/Q89"</span><span class="code-tag">&gt;</span>
+    apple
+  <span class="code-tag">&lt;/span&gt;</span>
+  for lunch.
+<span class="code-tag">&lt;/p&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <p>
+          <strong>Benefits:</strong>
+        </p>
+        <ul>
+          <li>Disambiguates homonyms (Apple Inc. vs. the fruit)</li>
+          <li>Connects to structured knowledge bases</li>
+          <li>Enables precise entity-based queries</li>
+          <li>Improves accuracy for named entity tasks</li>
+        </ul>
+      </section>
+
+      <section id="instruction">
+        <h2>Instruction</h2>
+
+        <p>
+          The <code>llm-intent-instruction</code> attribute provides a custom, free-form
+          instruction that overrides all other intent processing for that element.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Custom Instructions</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Override default behavior with custom instruction --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-instruction</span>=<span class="code-value">"Translate all technical jargon into plain English"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>
+    The API utilizes RESTful architecture with OAuth 2.0
+    authentication and returns JSON-formatted responses.
+  <span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Format-specific instruction --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-instruction</span>=<span class="code-value">"Summarize in exactly 3 bullet points"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Long article content here...<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <div class="callout-title">Precedence</div>
+          <p>
+            When <code>llm-intent-instruction</code> is present, it takes precedence over
+            <code>llm-intent-category</code> and other intent attributes. The category's
+            semantic value is still available for policy routing, but the custom instruction
+            is used for prompt construction.
+          </p>
+        </div>
+      </section>
+
+      <section id="prompt-construction">
+        <h2>Prompt Construction</h2>
+
+        <p>
+          The User Agent constructs the LLM prompt using a hierarchy of sources:
+        </p>
+
+        <div class="diagram">
+          <table>
+            <tr>
+              <td style="background: #fecaca; text-align: center; padding: 12px;">
+                <strong>1. Custom Instruction</strong><br>
+                <code>llm-intent-instruction</code><br>
+                <small>Highest priority &mdash; used directly if present</small>
+              </td>
+            </tr>
+            <tr>
+              <td style="background: #fed7aa; text-align: center; padding: 12px;">
+                <strong>2. Standardized Lexicon</strong><br>
+                <code>llm-intent-category</code> (if in lexicon)<br>
+                <small>Optimized prompts for known categories</small>
+              </td>
+            </tr>
+            <tr>
+              <td style="background: #fef3c7; text-align: center; padding: 12px;">
+                <strong>3. Fallback Template</strong><br>
+                <code>llm-intent-category</code> (if custom)<br>
+                <small>"Treat the following content as a(n) [value]."</small>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <h3>Combined Prompt Example</h3>
+
+        <div class="example-container">
+          <div class="example-header">HTML with Intent Attributes</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;article</span>
+  <span class="code-attr">llm-intent-category</span>=<span class="code-value">"api-spec"</span>
+  <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"high"</span><span class="code-tag">&gt;</span>
+
+  <span class="code-tag">&lt;h2&gt;</span>POST /api/users<span class="code-tag">&lt;/h2&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Creates a new user account.<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+          <div class="example-result">
+            <div class="example-result-label">Generated System Prompt Fragment:</div>
+<pre><code>Prioritize this content.
+This is an API specification. Treat it as authoritative technical reference.
+
+[Content follows...]</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="tone-output">
+        <h2>Tone & Output Format</h2>
+
+        <p>
+          Additional intent attributes control response style:
+        </p>
+
+        <h3><code>llm-intent-tone</code></h3>
+        <p>Specifies the desired tone for LLM responses about this content.</p>
+
+        <pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-tone</span>=<span class="code-value">"formal"</span><span class="code-tag">&gt;</span>...</code></pre>
+        <p>Generates: <code>"Adopt a(n) formal tone."</code></p>
+
+        <h3><code>llm-intent-output</code></h3>
+        <p>Specifies the desired output format.</p>
+
+        <pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-output</span>=<span class="code-value">"bullet-points"</span><span class="code-tag">&gt;</span>...</code></pre>
+        <p>Generates: <code>"Format your response as bullet-points."</code></p>
+      </section>
+
+      <section id="function-workflow">
+        <h2>Function & Workflow</h2>
+
+        <p>
+          For interactive applications, additional attributes describe UI behavior:
+        </p>
+
+        <h3><code>llm-intent-function</code></h3>
+        <p>Describes what an interactive control does.</p>
+
+        <pre><code><span class="code-tag">&lt;button</span> <span class="code-attr">llm-intent-function</span>=<span class="code-value">"submit-form"</span><span class="code-tag">&gt;</span>Submit<span class="code-tag">&lt;/button&gt;</span></code></pre>
+        <p>Generates: <code>"Use this control to submit-form."</code></p>
+
+        <h3><code>llm-intent-workflow</code></h3>
+        <p>Indicates the current stage in a multi-step process.</p>
+
+        <pre><code><span class="code-tag">&lt;section</span> <span class="code-attr">llm-intent-workflow</span>=<span class="code-value">"checkout-step-2"</span><span class="code-tag">&gt;</span>...</code></pre>
+        <p>Generates: <code>"(Workflow Stage: checkout-step-2)"</code></p>
+      </section>
+
+      <div class="page-nav">
+        <a href="policy.html">&larr; Previous: LLM-Policy Namespace</a>
+        <a href="provenance.html">Next: LLM-Provenance Namespace &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      LLM Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

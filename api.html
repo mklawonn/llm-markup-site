@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Reference - LLM Markup Tutorial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>LLM Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="policy.html">Policy</a>
+      <a href="intent.html">Intent</a>
+      <a href="provenance.html">Provenance</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="api.html" style="color: white;">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>DOM Extensions</h3>
+        <a href="#element" class="active">Element</a>
+        <a href="#document">Document</a>
+        <a href="#shadow-root">ShadowRoot</a>
+
+        <h3>Interfaces</h3>
+        <a href="#llm-policy">LLMPolicy</a>
+        <a href="#llm-intent">LLMIntent</a>
+        <a href="#llm-provenance">LLMProvenance</a>
+        <a href="#llm-global-policy">LLMGlobalPolicy</a>
+
+        <h3>Ledger</h3>
+        <a href="#ledger">LLMProvenanceLedger</a>
+        <a href="#ledger-entry">LLMProvenanceLedgerEntry</a>
+
+        <h3>Events</h3>
+        <a href="#events">Events</a>
+      </nav>
+    </aside>
+
+    <main>
+      <h1>API Reference</h1>
+
+      <p>
+        LLM Markup extends the DOM with new properties and methods. This reference
+        documents the JavaScript API available to web developers.
+      </p>
+
+      <section id="element">
+        <h2>Element Extensions</h2>
+
+        <p>
+          Every Element gains these read-only properties:
+        </p>
+
+        <h3><code>element.llmPolicy</code></h3>
+
+        <p>Returns the computed <a href="#llm-policy">LLMPolicy</a> for this element.</p>
+
+        <pre><code>const policy = document.querySelector('article').llmPolicy;
+console.log(policy.effectiveOutputTokens);  // ['readonly']
+console.log(policy.isReadonly);              // true</code></pre>
+
+        <h3><code>element.llmIntent</code></h3>
+
+        <p>Returns the <a href="#llm-intent">LLMIntent</a> for this element.</p>
+
+        <pre><code>const intent = document.querySelector('[llm-intent-category]').llmIntent;
+console.log(intent.category);     // 'summary'
+console.log(intent.importance);   // 'normal'</code></pre>
+
+        <h3><code>element.llmProvenance</code></h3>
+
+        <p>Returns the <a href="#llm-provenance">LLMProvenance</a> for this element.</p>
+
+        <pre><code>const prov = document.querySelector('blockquote').llmProvenance;
+console.log(prov.source);     // 'https://example.com/article'
+console.log(prov.citation);   // 'Smith et al., 2024'
+console.log(prov.confidence); // 0.95</code></pre>
+
+        <h3><code>element.checkMutationPermission(token)</code></h3>
+
+        <p>
+          Checks if a specific mutation type would be allowed. Returns <code>null</code>
+          if allowed, or an <code>LLMPolicyViolation</code> object if denied.
+        </p>
+
+        <pre><code>const violation = element.checkMutationPermission('content');
+if (violation === null) {
+  console.log('Content modification allowed');
+} else {
+  console.log('Denied:', violation.message);
+}</code></pre>
+
+        <h3><code>element.getLLMContextRepresentation()</code></h3>
+
+        <p>
+          Returns the filtered HTML string that would be included in the LLM context
+          for this element, based on its visibility policy.
+        </p>
+
+        <pre><code>const repr = element.getLLMContextRepresentation();
+console.log(repr);  // '<p>[REDACTED]</p>' (if structure-only)</code></pre>
+      </section>
+
+      <section id="document">
+        <h2>Document Extensions</h2>
+
+        <h3><code>document.llmGlobalPolicy</code></h3>
+
+        <p>Returns the resolved <a href="#llm-global-policy">LLMGlobalPolicy</a> for the document.</p>
+
+        <pre><code>const policy = document.llmGlobalPolicy;
+console.log(policy.defaults.output);  // ['readonly']
+console.log(policy.reportTo);         // 'https://api.example.com/reports'</code></pre>
+
+        <h3><code>document.llmPolicyResolved</code></h3>
+
+        <p>
+          Boolean indicating whether global policy resolution is complete.
+          LLM interaction MUST NOT begin until this is <code>true</code>.
+        </p>
+
+        <pre><code>if (document.llmPolicyResolved) {
+  startLLMInteraction();
+} else {
+  document.onllmpolicyresolved = () => startLLMInteraction();
+}</code></pre>
+
+        <h3><code>document.llmProvenanceLedger</code></h3>
+
+        <p>Returns the <a href="#ledger">LLMProvenanceLedger</a> for tracking modifications.</p>
+
+        <pre><code>const ledger = document.llmProvenanceLedger;
+console.log('Total entries:', ledger.length);
+console.log('Has violations:', ledger.hasIntegrityViolations);</code></pre>
+
+        <h3><code>document.buildLLMContext(options?)</code></h3>
+
+        <p>
+          Builds the filtered context representation for the entire document.
+          Throws <code>InvalidStateError</code> if called before policy resolution.
+        </p>
+
+        <pre><code>// Basic usage
+const context = document.buildLLMContext();
+
+// With options
+const context = document.buildLLMContext({
+  root: document.querySelector('main'),  // Custom root
+  format: 'html',                         // 'html' | 'text' | 'markdown'
+  includeBackground: false,               // Include importance='background'
+  resolveDependencies: true,              // Apply dependency constraints
+  includeMetadata: false                  // Return LLMContextResult object
+});
+
+// With metadata
+const result = document.buildLLMContext({ includeMetadata: true });
+console.log(result.content);        // The HTML string
+console.log(result.elementCount);   // Number of elements included
+console.log(result.omittedCount);   // Number hidden by policy</code></pre>
+
+        <h3><code>document.getIntegrityViolations()</code></h3>
+
+        <p>Returns an array of Elements that have integrity violations.</p>
+
+        <pre><code>const violations = document.getIntegrityViolations();
+violations.forEach(el => {
+  el.style.outline = '2px solid red';
+});</code></pre>
+      </section>
+
+      <section id="shadow-root">
+        <h2>ShadowRoot Extensions</h2>
+
+        <h3><code>shadowRoot.llmPolicyInherits</code></h3>
+
+        <p>Boolean indicating whether this shadow root inherits policies.</p>
+
+        <h3><code>shadowRoot.llmInheritedNamespaces</code></h3>
+
+        <p>Array of namespace names being inherited: <code>['input', 'output', 'memory']</code></p>
+
+        <h3><code>shadowRoot.llmProvenanceTransparent</code></h3>
+
+        <p>Boolean indicating whether full provenance details are reported.</p>
+
+        <h3><code>shadowRoot.llmInheritedPolicy</code></h3>
+
+        <p>The inherited LLMPolicy from the host, or <code>null</code> if not inheriting.</p>
+
+        <h3><code>shadowRoot.getEffectivePolicy(element)</code></h3>
+
+        <p>Computes the effective policy for an element within this shadow tree.</p>
+
+        <pre><code>const shadow = myComponent.shadowRoot;
+const inner = shadow.querySelector('.inner');
+const policy = shadow.getEffectivePolicy(inner);
+console.log(policy.effectiveOutputTokens);</code></pre>
+      </section>
+
+      <section id="llm-policy">
+        <h2>LLMPolicy Interface</h2>
+
+        <p>Represents the computed policy state for an element.</p>
+
+        <h3>Properties</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>inputAttribute</code></td>
+              <td>string</td>
+              <td>Raw attribute value</td>
+            </tr>
+            <tr>
+              <td><code>outputAttribute</code></td>
+              <td>string</td>
+              <td>Raw attribute value</td>
+            </tr>
+            <tr>
+              <td><code>memoryAttribute</code></td>
+              <td>string</td>
+              <td>Raw attribute value</td>
+            </tr>
+            <tr>
+              <td><code>inputTokens</code></td>
+              <td>string[]</td>
+              <td>Parsed local tokens</td>
+            </tr>
+            <tr>
+              <td><code>outputTokens</code></td>
+              <td>string[]</td>
+              <td>Parsed local tokens</td>
+            </tr>
+            <tr>
+              <td><code>memoryTokens</code></td>
+              <td>string[]</td>
+              <td>Parsed local tokens</td>
+            </tr>
+            <tr>
+              <td><code>effectiveInputTokens</code></td>
+              <td>string[]</td>
+              <td>After inheritance/constraints</td>
+            </tr>
+            <tr>
+              <td><code>effectiveOutputTokens</code></td>
+              <td>string[]</td>
+              <td>After inheritance/constraints</td>
+            </tr>
+            <tr>
+              <td><code>effectiveMemoryTokens</code></td>
+              <td>string[]</td>
+              <td>After inheritance/constraints</td>
+            </tr>
+            <tr>
+              <td><code>licenseProfile</code></td>
+              <td>LLMLicenseProfile?</td>
+              <td>License constraints</td>
+            </tr>
+            <tr>
+              <td><code>isHidden</code></td>
+              <td>boolean</td>
+              <td><code>true</code> if input='none'</td>
+            </tr>
+            <tr>
+              <td><code>isReadonly</code></td>
+              <td>boolean</td>
+              <td><code>true</code> if output='readonly'</td>
+            </tr>
+            <tr>
+              <td><code>isMutable</code></td>
+              <td>boolean</td>
+              <td><code>true</code> if output='mutable'</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Methods</h3>
+
+        <pre><code>policy.hasOutputPermission('content')   // boolean
+policy.hasInputChannel('text')          // boolean
+policy.hasMemoryScope('session')        // boolean</code></pre>
+      </section>
+
+      <section id="llm-intent">
+        <h2>LLMIntent Interface</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>category</code></td>
+              <td>string?</td>
+              <td>Semantic category</td>
+            </tr>
+            <tr>
+              <td><code>importance</code></td>
+              <td>string</td>
+              <td>critical/high/normal/low/background</td>
+            </tr>
+            <tr>
+              <td><code>entity</code></td>
+              <td>string?</td>
+              <td>Entity URI</td>
+            </tr>
+            <tr>
+              <td><code>instruction</code></td>
+              <td>string?</td>
+              <td>Custom instruction</td>
+            </tr>
+            <tr>
+              <td><code>function</code></td>
+              <td>string?</td>
+              <td>Interactive function</td>
+            </tr>
+            <tr>
+              <td><code>workflow</code></td>
+              <td>string?</td>
+              <td>Workflow stage</td>
+            </tr>
+            <tr>
+              <td><code>output</code></td>
+              <td>string?</td>
+              <td>Output format</td>
+            </tr>
+            <tr>
+              <td><code>tone</code></td>
+              <td>string?</td>
+              <td>Tone/persona</td>
+            </tr>
+            <tr>
+              <td><code>hasIntent</code></td>
+              <td>boolean</td>
+              <td>Any intent attribute set</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Methods</h3>
+
+        <pre><code>intent.generatePrompt()           // Returns system prompt fragment
+intent.isLexiconCategory()        // Is category in standardized lexicon?
+intent.getLexiconPrompt('summary') // Get optimized prompt for term</code></pre>
+      </section>
+
+      <section id="llm-provenance">
+        <h2>LLMProvenance Interface</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>source</code></td>
+              <td>string?</td>
+              <td>Canonical origin URI</td>
+            </tr>
+            <tr>
+              <td><code>citation</code></td>
+              <td>string?</td>
+              <td>Human-readable attribution</td>
+            </tr>
+            <tr>
+              <td><code>confidence</code></td>
+              <td>number</td>
+              <td>0.0-1.0 (NaN if not set)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Methods</h3>
+
+        <pre><code>provenance.getOperations()       // LLMProvenanceOperationEntry[]
+provenance.serializeOperations() // 'content:summary style:highlight'</code></pre>
+      </section>
+
+      <section id="ledger">
+        <h2>LLMProvenanceLedger Interface</h2>
+
+        <h3>Properties</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>length</code></td>
+              <td>number</td>
+              <td>Total entries</td>
+            </tr>
+            <tr>
+              <td><code>hasIntegrityViolations</code></td>
+              <td>boolean</td>
+              <td>Any violations detected</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Methods</h3>
+
+        <pre><code>// Access entries
+ledger.item(0)                              // Entry at index
+ledger.getEntriesForElement(element)        // Entries for specific element
+ledger.getEntriesForLayer('content')        // Entries for layer
+ledger.getEntriesInRange(startTime, endTime) // Entries in time range
+ledger.getIntegrityViolations()             // Entries with violations
+
+// Shadow DOM
+ledger.getShadowSummary(shadowRoot)         // Aggregated summary
+ledger.getShadowRootsWithMutations()        // Shadow roots with changes</code></pre>
+      </section>
+
+      <section id="ledger-entry">
+        <h2>LLMProvenanceLedgerEntry Interface</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>string</td>
+              <td>Unique identifier</td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>DOMHighResTimeStamp</td>
+              <td>When modification occurred</td>
+            </tr>
+            <tr>
+              <td><code>target</code></td>
+              <td>Element</td>
+              <td>Modified element</td>
+            </tr>
+            <tr>
+              <td><code>layer</code></td>
+              <td>string</td>
+              <td>content/style/interaction/topology/data</td>
+            </tr>
+            <tr>
+              <td><code>explanation</code></td>
+              <td>string</td>
+              <td>Why the change was made</td>
+            </tr>
+            <tr>
+              <td><code>originalValue</code></td>
+              <td>any</td>
+              <td>Value before change</td>
+            </tr>
+            <tr>
+              <td><code>newValue</code></td>
+              <td>any</td>
+              <td>Value after change</td>
+            </tr>
+            <tr>
+              <td><code>hasAttributeEntry</code></td>
+              <td>boolean</td>
+              <td>Has corresponding operation attribute</td>
+            </tr>
+            <tr>
+              <td><code>agentId</code></td>
+              <td>string?</td>
+              <td>Optional LLM agent identifier</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="llm-global-policy">
+        <h2>LLMGlobalPolicy Interface</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>reportTo</code></td>
+              <td>string?</td>
+              <td>Reporting endpoint URI</td>
+            </tr>
+            <tr>
+              <td><code>reportOnly</code></td>
+              <td>boolean</td>
+              <td>Audit mode (don't block)</td>
+            </tr>
+            <tr>
+              <td><code>defaults</code></td>
+              <td>LLMPolicyDefaults</td>
+              <td>Default token values</td>
+            </tr>
+            <tr>
+              <td><code>constraints</code></td>
+              <td>LLMPolicyConstraints</td>
+              <td>Block selectors, rules, deps</td>
+            </tr>
+            <tr>
+              <td><code>headerSource</code></td>
+              <td>LLMGlobalPolicySourceInfo</td>
+              <td>HTTP header info</td>
+            </tr>
+            <tr>
+              <td><code>metaSource</code></td>
+              <td>LLMGlobalPolicySourceInfo</td>
+              <td>Meta tag info</td>
+            </tr>
+            <tr>
+              <td><code>resolved</code></td>
+              <td>boolean</td>
+              <td>Is policy fully resolved</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Methods</h3>
+
+        <pre><code>policy.validateMutation(element, 'content')  // Returns violation or null
+policy.resolveDependencies(elements)         // Returns elements to omit</code></pre>
+      </section>
+
+      <section id="events">
+        <h2>Events</h2>
+
+        <h3><code>llmpolicyresolved</code></h3>
+
+        <p>Fired when global policy resolution is complete.</p>
+
+        <pre><code>document.onllmpolicyresolved = (event) => {
+  console.log('Policy:', event.policy);
+  console.log('Had errors:', event.hadErrors);
+};</code></pre>
+
+        <h3><code>llmprovenancechange</code></h3>
+
+        <p>Fired when a new entry is added to the Provenance Ledger.</p>
+
+        <pre><code>document.onllmprovenancechange = (event) => {
+  console.log('Target:', event.target);
+  console.log('Layer:', event.layer);
+  console.log('Explanation:', event.explanation);
+  console.log('Timestamp:', event.timestamp);
+};</code></pre>
+
+        <h3><code>llmintegrityviolation</code></h3>
+
+        <p>Fired when an integrity violation is detected.</p>
+
+        <pre><code>document.onllmintegrityviolation = (event) => {
+  console.error('Violation on:', event.target);
+  console.error('Layer:', event.layer);
+  console.error('Type:', event.violationType);
+  console.error('Original:', event.originalValue);
+  console.error('Current:', event.currentValue);
+  console.error('Reverted:', event.reverted);
+};</code></pre>
+
+        <h3><code>llmpolicyviolation</code></h3>
+
+        <p>Fired when a policy violation occurs (blocked mutation).</p>
+
+        <pre><code>document.onllmpolicyviolation = (event) => {
+  console.error('Violation:', event.violation);
+  console.error('Target:', event.violation.target);
+  console.error('Denied:', event.violation.deniedPermission);
+};</code></pre>
+      </section>
+
+      <div class="page-nav">
+        <a href="advanced.html">&larr; Previous: Advanced Topics</a>
+        <a href="examples.html">Next: Examples &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      LLM Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

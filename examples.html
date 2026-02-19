@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Examples - LLM Markup Tutorial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>LLM Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="policy.html">Policy</a>
+      <a href="intent.html">Intent</a>
+      <a href="provenance.html">Provenance</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="api.html">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>Examples</h3>
+        <a href="#news-article" class="active">News Article</a>
+        <a href="#e-commerce">E-Commerce Product</a>
+        <a href="#documentation">Documentation</a>
+        <a href="#legal-document">Legal Document</a>
+        <a href="#interactive-form">Interactive Form</a>
+        <a href="#web-component">Web Component</a>
+
+        <h3>Patterns</h3>
+        <a href="#protected-quote">Protected Quotes</a>
+        <a href="#pii-redaction">PII Redaction</a>
+        <a href="#annotatable-text">Annotatable Text</a>
+        <a href="#ai-generated">AI-Generated Content</a>
+      </nav>
+    </aside>
+
+    <main>
+      <h1>Examples</h1>
+
+      <p>
+        This page provides complete, real-world examples of LLM Markup in action.
+        Each example demonstrates common patterns and best practices.
+      </p>
+
+      <section id="news-article">
+        <h2>News Article</h2>
+
+        <p>
+          A typical news article with protected quotes, annotatable body text,
+          and hidden advertising/tracking elements.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">news-article.html</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;article</span>
+  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://news.example/article/12345"</span>
+  <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"TechNews Daily"</span><span class="code-tag">&gt;</span>
+
+  <span class="code-comment">&lt;!-- Header: Important, read-only --&gt;</span>
+  <span class="code-tag">&lt;header</span> <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"high"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;h1&gt;</span>Major Tech Company Announces New Product<span class="code-tag">&lt;/h1&gt;</span>
+    <span class="code-tag">&lt;p</span> <span class="code-attr">class</span>=<span class="code-value">"byline"</span><span class="code-tag">&gt;</span>By Jane Smith &bull; January 15, 2024<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/header&gt;</span>
+
+  <span class="code-comment">&lt;!-- Summary: Critical for context --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"summary"</span>
+       <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>The company unveiled its latest product at the annual
+    conference, featuring improved performance and new AI capabilities.<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Body: Can be annotated (highlights, links) but not edited --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"article-body"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation style"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>
+      In a keynote presentation that lasted over two hours, CEO
+      <span class="code-tag">&lt;span</span> <span class="code-attr">llm-intent-entity</span>=<span class="code-value">"https://wikidata.org/wiki/Q..."</span><span class="code-tag">&gt;</span>
+        John Doe
+      <span class="code-tag">&lt;/span&gt;</span>
+      demonstrated the new features to an audience of thousands.
+    <span class="code-tag">&lt;/p&gt;</span>
+
+    <span class="code-comment">&lt;!-- Quote: Strictly read-only --&gt;</span>
+    <span class="code-tag">&lt;blockquote</span>
+      <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span>
+      <span class="code-attr">llm-intent-category</span>=<span class="code-value">"quote"</span>
+      <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"John Doe, CEO"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>"This is the most significant product we've ever built.
+      It will change how people work."<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/blockquote&gt;</span>
+
+    <span class="code-tag">&lt;p&gt;</span>Industry analysts were cautiously optimistic...<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Comments: Append-only (can add, not edit existing) --&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">class</span>=<span class="code-value">"comments"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"append"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;h2&gt;</span>Comments<span class="code-tag">&lt;/h2&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"comment"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>Existing comment that cannot be modified.<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+    <span class="code-comment">&lt;!-- LLM can add new comments here --&gt;</span>
+  <span class="code-tag">&lt;/section&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span>
+
+<span class="code-comment">&lt;!-- Advertisement: Hidden from LLM --&gt;</span>
+<span class="code-tag">&lt;aside</span> <span class="code-attr">class</span>=<span class="code-value">"ad"</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;img</span> <span class="code-attr">src</span>=<span class="code-value">"ad.jpg"</span> <span class="code-attr">alt</span>=<span class="code-value">"Advertisement"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;/aside&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="e-commerce">
+        <h2>E-Commerce Product Page</h2>
+
+        <p>
+          A product page with editable descriptions, protected pricing,
+          and form auto-fill capabilities.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">product-page.html</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">itemscope</span> <span class="code-attr">itemtype</span>=<span class="code-value">"https://schema.org/Product"</span><span class="code-tag">&gt;</span>
+
+  <span class="code-comment">&lt;!-- Product name: Editable for personalization --&gt;</span>
+  <span class="code-tag">&lt;h1</span> <span class="code-attr">itemprop</span>=<span class="code-value">"name"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
+    Widget Pro Max
+  <span class="code-tag">&lt;/h1&gt;</span>
+
+  <span class="code-comment">&lt;!-- Price: NEVER editable --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"pricing"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;span</span> <span class="code-attr">itemprop</span>=<span class="code-value">"price"</span><span class="code-tag">&gt;</span>$99.99<span class="code-tag">&lt;/span&gt;</span>
+    <span class="code-tag">&lt;meta</span> <span class="code-attr">itemprop</span>=<span class="code-value">"priceCurrency"</span> <span class="code-attr">content</span>=<span class="code-value">"USD"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Description: Summarizable and annotatable --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">itemprop</span>=<span class="code-value">"description"</span>
+       <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span>
+       <span class="code-attr">llm-intent-category</span>=<span class="code-value">"definition"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>
+      The Widget Pro Max features our most advanced technology yet.
+      With 50% more power and 30% longer battery life, it's perfect
+      for professionals who demand the best.
+    <span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Specs: Structure visible, can highlight --&gt;</span>
+  <span class="code-tag">&lt;table</span> <span class="code-attr">class</span>=<span class="code-value">"specs"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;tr&gt;&lt;th&gt;</span>Dimensions<span class="code-tag">&lt;/th&gt;&lt;td&gt;</span>6" x 3" x 0.5"<span class="code-tag">&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="code-tag">&lt;tr&gt;&lt;th&gt;</span>Weight<span class="code-tag">&lt;/th&gt;&lt;td&gt;</span>8 oz<span class="code-tag">&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="code-tag">&lt;tr&gt;&lt;th&gt;</span>Battery<span class="code-tag">&lt;/th&gt;&lt;td&gt;</span>4000 mAh<span class="code-tag">&lt;/td&gt;&lt;/tr&gt;</span>
+  <span class="code-tag">&lt;/table&gt;</span>
+
+  <span class="code-comment">&lt;!-- Reviews: LLM can summarize/reorder --&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">class</span>=<span class="code-value">"reviews"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"layout"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;h2&gt;</span>Customer Reviews<span class="code-tag">&lt;/h2&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"review"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>"Best purchase ever!" - 5 stars<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"review"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>"Good value for money" - 4 stars<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/section&gt;</span>
+
+  <span class="code-comment">&lt;!-- Purchase form: Data can be auto-filled --&gt;</span>
+  <span class="code-tag">&lt;form</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"data"</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"session"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;select</span> <span class="code-attr">name</span>=<span class="code-value">"color"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;option&gt;</span>Black<span class="code-tag">&lt;/option&gt;</span>
+      <span class="code-tag">&lt;option&gt;</span>Silver<span class="code-tag">&lt;/option&gt;</span>
+      <span class="code-tag">&lt;option&gt;</span>Blue<span class="code-tag">&lt;/option&gt;</span>
+    <span class="code-tag">&lt;/select&gt;</span>
+    <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-value">"number"</span> <span class="code-attr">name</span>=<span class="code-value">"quantity"</span> <span class="code-attr">value</span>=<span class="code-value">"1"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;button</span> <span class="code-attr">type</span>=<span class="code-value">"submit"</span><span class="code-tag">&gt;</span>Add to Cart<span class="code-tag">&lt;/button&gt;</span>
+  <span class="code-tag">&lt;/form&gt;</span>
+<span class="code-tag">&lt;/main&gt;</span>
+
+<span class="code-comment">&lt;!-- Internal data: Hidden from LLM --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span> <span class="code-attr">data-margin</span>=<span class="code-value">"45%"</span> <span class="code-attr">data-sku</span>=<span class="code-value">"WPM-2024"</span><span class="code-tag">&gt;&lt;/div&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="documentation">
+        <h2>Technical Documentation</h2>
+
+        <p>
+          API documentation with code blocks, examples, and warnings.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">api-docs.html</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;article</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"api-spec"</span><span class="code-tag">&gt;</span>
+
+  <span class="code-tag">&lt;h1&gt;</span>API Reference: createUser()<span class="code-tag">&lt;/h1&gt;</span>
+
+  <span class="code-comment">&lt;!-- Function signature: Read-only code --&gt;</span>
+  <span class="code-tag">&lt;pre</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"code-block"</span>
+       <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;&lt;code&gt;</span>
+async function createUser(
+  email: string,
+  password: string,
+  options?: CreateUserOptions
+): Promise&lt;User&gt;
+  <span class="code-tag">&lt;/code&gt;&lt;/pre&gt;</span>
+
+  <span class="code-comment">&lt;!-- Description: Can be simplified/annotated --&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;h2&gt;</span>Description<span class="code-tag">&lt;/h2&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>
+      Creates a new user account with the specified credentials.
+      The password must meet the complexity requirements defined
+      in the security configuration.
+    <span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/section&gt;</span>
+
+  <span class="code-comment">&lt;!-- Warning: Critical, highlighted --&gt;</span>
+  <span class="code-tag">&lt;aside</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"warning"</span>
+         <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"critical"</span>
+         <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;strong&gt;</span>Security Warning:<span class="code-tag">&lt;/strong&gt;</span> Never store passwords
+    in plain text. This function automatically hashes passwords
+    before storage.
+  <span class="code-tag">&lt;/aside&gt;</span>
+
+  <span class="code-comment">&lt;!-- Example: Read-only code with explanation --&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"example"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;h2&gt;</span>Example<span class="code-tag">&lt;/h2&gt;</span>
+    <span class="code-tag">&lt;pre</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"code-block"</span>
+         <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;&lt;code&gt;</span>
+const user = await createUser(
+  'user@example.com',
+  'SecurePass123!',
+  { sendWelcomeEmail: true }
+);
+console.log(user.id);
+    <span class="code-tag">&lt;/code&gt;&lt;/pre&gt;</span>
+  <span class="code-tag">&lt;/section&gt;</span>
+
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="legal-document">
+        <h2>Legal Document</h2>
+
+        <p>
+          A contract or legal document with strict read-only requirements.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">legal-contract.html</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Entire document: Strictly read-only, licensed --&gt;</span>
+<span class="code-tag">&lt;article</span>
+  <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span>
+  <span class="code-attr">llm-policy-license</span>=<span class="code-value">"all-rights-reserved"</span>
+  <span class="code-attr">llm-intent-category</span>=<span class="code-value">"legal-disclaimer"</span><span class="code-tag">&gt;</span>
+
+  <span class="code-tag">&lt;h1&gt;</span>Terms of Service<span class="code-tag">&lt;/h1&gt;</span>
+
+  <span class="code-tag">&lt;p</span> <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
+    PLEASE READ THESE TERMS CAREFULLY BEFORE USING OUR SERVICE.
+  <span class="code-tag">&lt;/p&gt;</span>
+
+  <span class="code-tag">&lt;section&gt;</span>
+    <span class="code-tag">&lt;h2&gt;</span>1. Acceptance of Terms<span class="code-tag">&lt;/h2&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>
+      By accessing or using the Service, you agree to be bound
+      by these Terms. If you disagree with any part of the terms,
+      you may not access the Service.
+    <span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/section&gt;</span>
+
+  <span class="code-tag">&lt;section&gt;</span>
+    <span class="code-tag">&lt;h2&gt;</span>2. Limitation of Liability<span class="code-tag">&lt;/h2&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>
+      IN NO EVENT SHALL THE COMPANY BE LIABLE FOR ANY INDIRECT,
+      INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES...
+    <span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/section&gt;</span>
+
+  <span class="code-tag">&lt;footer&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>Last updated: January 1, 2024<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>&amp;copy; 2024 Example Corporation. All rights reserved.<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/footer&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="interactive-form">
+        <h2>Interactive Form</h2>
+
+        <p>
+          A smart form with AI assistance for auto-completion and validation.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">smart-form.html</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;form</span>
+  <span class="code-attr">llm-policy-output</span>=<span class="code-value">"data interaction"</span>
+  <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"session"</span>
+  <span class="code-attr">llm-intent-function</span>=<span class="code-value">"submit-contact-form"</span><span class="code-tag">&gt;</span>
+
+  <span class="code-tag">&lt;h2&gt;</span>Contact Us<span class="code-tag">&lt;/h2&gt;</span>
+
+  <span class="code-comment">&lt;!-- Regular fields: Data can be auto-filled --&gt;</span>
+  <span class="code-tag">&lt;label&gt;</span>
+    Name
+    <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-value">"text"</span> <span class="code-attr">name</span>=<span class="code-value">"name"</span> <span class="code-attr">required</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;/label&gt;</span>
+
+  <span class="code-tag">&lt;label&gt;</span>
+    Email
+    <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-value">"email"</span> <span class="code-attr">name</span>=<span class="code-value">"email"</span> <span class="code-attr">required</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;/label&gt;</span>
+
+  <span class="code-comment">&lt;!-- Message: LLM can help draft --&gt;</span>
+  <span class="code-tag">&lt;label&gt;</span>
+    Message
+    <span class="code-tag">&lt;textarea</span>
+      <span class="code-attr">name</span>=<span class="code-value">"message"</span>
+      <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span>
+      <span class="code-attr">llm-intent-instruction</span>=<span class="code-value">"Help the user compose a professional message"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;/textarea&gt;</span>
+  <span class="code-tag">&lt;/label&gt;</span>
+
+  <span class="code-comment">&lt;!-- Sensitive fields: Hidden from LLM --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-value">"hidden"</span> <span class="code-attr">name</span>=<span class="code-value">"csrf_token"</span> <span class="code-attr">value</span>=<span class="code-value">"abc123"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-tag">&lt;button</span> <span class="code-attr">type</span>=<span class="code-value">"submit"</span>
+          <span class="code-attr">llm-intent-function</span>=<span class="code-value">"submit"</span><span class="code-tag">&gt;</span>
+    Send Message
+  <span class="code-tag">&lt;/button&gt;</span>
+<span class="code-tag">&lt;/form&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="protected-quote">
+        <h2>Pattern: Protected Quotes</h2>
+
+        <p>
+          Ensure quoted content is never modified while allowing annotation.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Pattern</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;blockquote</span>
+  <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span>
+  <span class="code-attr">llm-intent-category</span>=<span class="code-value">"quote"</span>
+  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"[original URL]"</span>
+  <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"[Speaker Name]"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>The exact words of the speaker, preserved verbatim.<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/blockquote&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="pii-redaction">
+        <h2>Pattern: PII Redaction</h2>
+
+        <p>
+          Show document structure while hiding sensitive personal information.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Pattern</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Structure visible, text redacted --&gt;</span>
+<span class="code-tag">&lt;section</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;h2&gt;</span>Personal Information<span class="code-tag">&lt;/h2&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Name: John Smith<span class="code-tag">&lt;/p&gt;</span>       <span class="code-comment">&lt;!-- Shows as [REDACTED] --&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>SSN: 123-45-6789<span class="code-tag">&lt;/p&gt;</span>     <span class="code-comment">&lt;!-- Shows as [REDACTED] --&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>DOB: 01/15/1990<span class="code-tag">&lt;/p&gt;</span>      <span class="code-comment">&lt;!-- Shows as [REDACTED] --&gt;</span>
+<span class="code-tag">&lt;/section&gt;</span>
+
+<span class="code-comment">&lt;!-- Or completely hidden --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span> <span class="code-attr">class</span>=<span class="code-value">"pii"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;!-- LLM doesn't even know this exists --&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="annotatable-text">
+        <h2>Pattern: Annotatable Text</h2>
+
+        <p>
+          Allow highlighting and linking without changing the original text.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Pattern</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;article</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation style"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>
+    The LLM can wrap words in &lt;mark&gt;, &lt;a&gt;, &lt;abbr&gt;,
+    or &lt;span&gt; tags, but cannot change the words themselves.
+  <span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span>
+
+<span class="code-comment">&lt;!-- LLM might produce: --&gt;</span>
+<span class="code-tag">&lt;article&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>
+    The <span class="code-tag">&lt;abbr</span> <span class="code-attr">title</span>=<span class="code-value">"Large Language Model"</span><span class="code-tag">&gt;</span>LLM<span class="code-tag">&lt;/abbr&gt;</span> can wrap words in
+    <span class="code-tag">&lt;mark&gt;</span>&lt;mark&gt;<span class="code-tag">&lt;/mark&gt;</span>, <span class="code-tag">&lt;mark&gt;</span>&lt;a&gt;<span class="code-tag">&lt;/mark&gt;</span>, ...
+  <span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="ai-generated">
+        <h2>Pattern: AI-Generated Content</h2>
+
+        <p>
+          Mark content that was generated or modified by AI with proper provenance.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Pattern</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;div</span>
+  <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:generated-summary"</span>
+  <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.85"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>
+    This summary was automatically generated. The original
+    article discussed three main points: innovation in AI,
+    applications in healthcare, and ethical considerations.
+  <span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Translation example --&gt;</span>
+<span class="code-tag">&lt;p</span>
+  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://example.com/original-es"</span>
+  <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:translated-from-spanish"</span>
+  <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.92"</span><span class="code-tag">&gt;</span>
+  This text was translated from the original Spanish article.
+<span class="code-tag">&lt;/p&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <div class="page-nav">
+        <a href="api.html">&larr; Previous: API Reference</a>
+        <a href="index.html">Back to Introduction &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      LLM Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

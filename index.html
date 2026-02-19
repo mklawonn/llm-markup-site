@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM Markup Tutorial - A Standard for AI-Web Interaction</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>LLM Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="policy.html">Policy</a>
+      <a href="intent.html">Intent</a>
+      <a href="provenance.html">Provenance</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="api.html">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>Introduction</h3>
+        <a href="#what-is-llm-markup" class="active">What is LLM Markup?</a>
+        <a href="#the-problem">The Problem</a>
+        <a href="#the-solution">The Solution</a>
+        <a href="#key-concepts">Key Concepts</a>
+
+        <h3>Namespaces</h3>
+        <a href="policy.html">LLM-Policy</a>
+        <a href="intent.html">LLM-Intent</a>
+        <a href="provenance.html">LLM-Provenance</a>
+
+        <h3>Advanced Topics</h3>
+        <a href="advanced.html#global-policy">Global Policy</a>
+        <a href="advanced.html#shadow-dom">Shadow DOM</a>
+        <a href="advanced.html#licensing">License Enforcement</a>
+
+        <h3>Reference</h3>
+        <a href="api.html">DOM API</a>
+        <a href="examples.html">Examples</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="hero">
+        <h1>LLM Markup</h1>
+        <p>A declarative standard for controlling how AI assistants interact with web content</p>
+        <a href="#what-is-llm-markup" class="btn btn-primary">Get Started</a>
+      </div>
+
+      <section id="what-is-llm-markup">
+        <h2>What is LLM Markup?</h2>
+
+        <p>
+          <strong>LLM Markup (LLMPM)</strong> is a proposed web standard that provides a declarative
+          contract between web content authors and LLM-infused User Agents (browsers with built-in AI assistants).
+        </p>
+
+        <p>
+          As AI assistants become integrated into web browsers, content authors need ways to specify:
+        </p>
+
+        <ul>
+          <li><strong>What the AI can see</strong> &mdash; Visibility and privacy controls</li>
+          <li><strong>What the AI can change</strong> &mdash; Mutation permissions</li>
+          <li><strong>What the AI can remember</strong> &mdash; Data retention policies</li>
+          <li><strong>How content should be interpreted</strong> &mdash; Semantic guidance</li>
+          <li><strong>What changes were made</strong> &mdash; Provenance and accountability</li>
+        </ul>
+
+        <p>
+          LLM Markup provides all of this through simple HTML attributes that are ignored by browsers
+          that don't support them, ensuring backward compatibility.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Quick Example</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- AI can see and annotate, but not edit text --&gt;</span>
+<span class="code-tag">&lt;article</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;h1&gt;</span>My Blog Post<span class="code-tag">&lt;/h1&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>This content can be highlighted but not rewritten.<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span>
+
+<span class="code-comment">&lt;!-- AI cannot see this at all --&gt;</span>
+<span class="code-tag">&lt;aside</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Secret admin notes<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/aside&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="the-problem">
+        <h2>The Problem</h2>
+
+        <p>
+          Modern web browsers are increasingly integrating LLM-based AI assistants. These assistants
+          can read page content, answer questions, fill forms, and even modify the DOM. However,
+          this creates significant challenges:
+        </p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Privacy Concerns</h4>
+            <p>
+              Sensitive information (passwords, financial data, PII) might be sent to AI models
+              without explicit consent or awareness.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Unintended Modifications</h4>
+            <p>
+              AI assistants might modify content that shouldn't be changed, like legal disclaimers,
+              quoted material, or verified data.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Lack of Accountability</h4>
+            <p>
+              Users have no way to know what an AI has changed on a page, making it impossible
+              to trust AI-modified content.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Inconsistent Behavior</h4>
+            <p>
+              Different browsers and AI assistants might handle the same content differently,
+              leading to unpredictable experiences.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">The Core Issue</div>
+          <p>
+            Without a standard, content authors have <strong>no control</strong> over how AI assistants
+            interact with their content. This is analogous to the web before Content Security Policy &mdash;
+            websites had no way to declare their security requirements.
+          </p>
+        </div>
+      </section>
+
+      <section id="the-solution">
+        <h2>The Solution</h2>
+
+        <p>
+          LLM Markup solves these problems by providing a <strong>declarative contract</strong> that
+          content authors can use to specify their requirements. Crucially, this contract is enforced
+          by the <strong>User Agent (browser)</strong>, not the LLM itself.
+        </p>
+
+        <div class="diagram">
+          <div class="diagram-flow">
+            <div class="diagram-box" style="background: var(--gray-200);">Web Content + LLM Markup</div>
+            <div class="diagram-arrow">&rarr;</div>
+            <div class="diagram-box" style="background: var(--primary); color: white;">User Agent (Enforcer)</div>
+            <div class="diagram-arrow">&rarr;</div>
+            <div class="diagram-box" style="background: var(--secondary); color: white;">Filtered Context &rarr; LLM</div>
+          </div>
+          <p style="margin-top: 16px; color: var(--gray-600);">
+            The User Agent filters content <em>before</em> the LLM sees it. The LLM cannot bypass policies.
+          </p>
+        </div>
+
+        <h3>Why User Agent Enforcement?</h3>
+
+        <p>
+          LLMs are probabilistic systems &mdash; they might not follow instructions perfectly.
+          Security cannot depend on an LLM "choosing" to respect policies. Instead:
+        </p>
+
+        <ul>
+          <li>The User Agent parses LLM Markup attributes <strong>deterministically</strong></li>
+          <li>Hidden content is <strong>never sent</strong> to the LLM</li>
+          <li>Unauthorized mutations are <strong>blocked</strong> before they happen</li>
+          <li>Policies are <strong>testable</strong> and <strong>auditable</strong></li>
+        </ul>
+
+        <div class="callout callout-success">
+          <div class="callout-title">Key Insight</div>
+          <p>
+            LLM Markup is similar to CSP (Content Security Policy) in philosophy: declare your
+            requirements, and the browser enforces them mechanistically.
+          </p>
+        </div>
+      </section>
+
+      <section id="key-concepts">
+        <h2>Key Concepts</h2>
+
+        <h3>The Three Namespaces</h3>
+
+        <p>
+          LLM Markup is organized into three orthogonal namespaces, each addressing a different concern:
+        </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <h4><span class="token token-output">llm-policy-*</span></h4>
+            <p><strong>Hard Constraints</strong></p>
+            <p>
+              Mechanistically enforced by the User Agent. Controls visibility, mutations, and
+              data retention. The LLM cannot violate these.
+            </p>
+            <a href="policy.html" class="btn btn-secondary">Learn More &rarr;</a>
+          </div>
+
+          <div class="card">
+            <h4><span class="token token-intent">llm-intent-*</span></h4>
+            <p><strong>Semantic Guidance</strong></p>
+            <p>
+              Soft hints for the LLM. Provides context about content meaning, importance, and
+              desired handling. Influences prompt construction.
+            </p>
+            <a href="intent.html" class="btn btn-secondary">Learn More &rarr;</a>
+          </div>
+
+          <div class="card">
+            <h4><span class="token token-provenance">llm-provenance-*</span></h4>
+            <p><strong>Audit Trail</strong></p>
+            <p>
+              Tracks content sources and modifications. Enables accountability by recording
+              what the LLM changed and why.
+            </p>
+            <a href="provenance.html" class="btn btn-secondary">Learn More &rarr;</a>
+          </div>
+        </div>
+
+        <h3>Token-Based Syntax</h3>
+
+        <p>
+          Policy attributes use space-separated tokens, similar to the HTML <code>class</code> attribute:
+        </p>
+
+        <pre><code><span class="code-comment">&lt;!-- Multiple tokens combine their permissions --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"style annotation content"</span><span class="code-tag">&gt;</span>
+  Can change styles, add annotations, and edit text
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+
+        <h3>Inheritance</h3>
+
+        <p>
+          Policies inherit from parent elements unless overridden locally:
+        </p>
+
+        <pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+  <span class="code-comment">&lt;!-- Everything here is readonly by default --&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Cannot be changed<span class="code-tag">&lt;/p&gt;</span>
+
+  <span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
+    <span class="code-comment">&lt;!-- This section overrides the parent --&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>This CAN be changed<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+<span class="code-tag">&lt;/main&gt;</span></code></pre>
+
+        <h3>Secure Defaults</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Default Value</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>llm-policy-input</code></td>
+              <td><span class="token token-input">all</span></td>
+              <td>Content is visible by default; authors opt-out of visibility</td>
+            </tr>
+            <tr>
+              <td><code>llm-policy-output</code></td>
+              <td><span class="token token-output">readonly</span></td>
+              <td>Content is immutable by default; authors opt-in to mutations</td>
+            </tr>
+            <tr>
+              <td><code>llm-policy-memory</code></td>
+              <td><span class="token token-memory">none</span></td>
+              <td>No data retention by default; authors opt-in to persistence</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Principle of Least Privilege</div>
+          <p>
+            The default configuration is maximally restrictive for mutations and data retention.
+            Authors must explicitly grant permissions. This follows security best practices.
+          </p>
+        </div>
+      </section>
+
+      <section id="next-steps">
+        <h2>Next Steps</h2>
+
+        <p>Ready to dive deeper? Start with the namespace that interests you most:</p>
+
+        <div class="grid-3">
+          <a href="policy.html" class="card" style="text-decoration: none; color: inherit;">
+            <h4 style="color: var(--danger);">LLM-Policy &rarr;</h4>
+            <p>Learn about visibility, mutation, and retention controls</p>
+          </a>
+
+          <a href="intent.html" class="card" style="text-decoration: none; color: inherit;">
+            <h4 style="color: var(--warning);">LLM-Intent &rarr;</h4>
+            <p>Learn about semantic categories and importance levels</p>
+          </a>
+
+          <a href="provenance.html" class="card" style="text-decoration: none; color: inherit;">
+            <h4 style="color: var(--secondary);">LLM-Provenance &rarr;</h4>
+            <p>Learn about source tracking and modification history</p>
+          </a>
+        </div>
+      </section>
+
+      <div class="page-nav">
+        <span></span>
+        <a href="policy.html">Next: LLM-Policy Namespace &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      LLM Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

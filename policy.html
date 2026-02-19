@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM-Policy Namespace - LLM Markup Tutorial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>LLM Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="policy.html" style="color: white;">Policy</a>
+      <a href="intent.html">Intent</a>
+      <a href="provenance.html">Provenance</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="api.html">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>Policy Namespace</h3>
+        <a href="#overview" class="active">Overview</a>
+        <a href="#input">Input (Visibility)</a>
+        <a href="#output">Output (Mutation)</a>
+        <a href="#memory">Memory (Retention)</a>
+        <a href="#license">License Enforcement</a>
+        <a href="#inheritance">Inheritance</a>
+
+        <h3>Input Tokens</h3>
+        <a href="#input-none">none</a>
+        <a href="#input-structure">structure</a>
+        <a href="#input-text">text</a>
+        <a href="#input-attributes">attributes</a>
+        <a href="#input-media">media</a>
+        <a href="#input-all">all</a>
+
+        <h3>Output Tokens</h3>
+        <a href="#output-readonly">readonly</a>
+        <a href="#output-style">style</a>
+        <a href="#output-annotation">annotation</a>
+        <a href="#output-content">content</a>
+        <a href="#output-mutable">mutable</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="namespace-header namespace-policy">
+        <h2>LLM-Policy Namespace</h2>
+        <p>Hard constraints enforced by the User Agent. Controls what the LLM sees, changes, and remembers.</p>
+      </div>
+
+      <section id="overview">
+        <h2>Overview</h2>
+
+        <p>
+          The <strong>llm-policy</strong> namespace provides three attributes that control the
+          fundamental interaction between web content and AI assistants:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Controls</th>
+              <th>Question It Answers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>llm-policy-input</code></td>
+              <td>Visibility</td>
+              <td>"What can the LLM see?"</td>
+            </tr>
+            <tr>
+              <td><code>llm-policy-output</code></td>
+              <td>Mutation</td>
+              <td>"What can the LLM change?"</td>
+            </tr>
+            <tr>
+              <td><code>llm-policy-memory</code></td>
+              <td>Retention</td>
+              <td>"What can the LLM remember?"</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">Hard Enforcement</div>
+          <p>
+            Unlike intent attributes (which are guidance), policy attributes are
+            <strong>mechanistically enforced</strong> by the User Agent. The LLM cannot
+            violate them because restricted content never reaches the LLM, and unauthorized
+            mutations are blocked before they happen.
+          </p>
+        </div>
+      </section>
+
+      <section id="input">
+        <h2>Input (Visibility Control)</h2>
+
+        <p>
+          The <code>llm-policy-input</code> attribute controls what information from an element
+          is included in the LLM's context. It uses additive tokens that can be combined.
+        </p>
+
+        <h3 id="input-none">Token: <code>none</code></h3>
+        <p>
+          Completely hides the element and all its descendants from the LLM. The element is
+          omitted entirely from the context &mdash; as if it doesn't exist.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Hiding Sensitive Content</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Admin password: hunter2<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;button</span> <span class="code-attr">onclick</span>=<span class="code-value">"deleteEverything()"</span><span class="code-tag">&gt;</span>Delete<span class="code-tag">&lt;/button&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+          </div>
+          <div class="example-result">
+            <div class="example-result-label">What the LLM sees:</div>
+            <p><em>(nothing &mdash; the element is completely hidden)</em></p>
+          </div>
+        </div>
+
+        <p><strong>Use cases:</strong></p>
+        <ul>
+          <li>Authentication forms and credentials</li>
+          <li>Admin panels and dangerous controls</li>
+          <li>Private user data (SSN, financial info)</li>
+          <li>Internal debugging information</li>
+        </ul>
+
+        <h3 id="input-structure">Token: <code>structure</code></h3>
+        <p>
+          Preserves the HTML element structure but replaces all text content with a
+          <code>[REDACTED]</code> placeholder. Useful when you want the LLM to understand
+          the page layout without seeing specific content.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Redacting Text While Preserving Structure</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;h2&gt;</span>User Profile<span class="code-tag">&lt;/h2&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Name: John Smith<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Email: john@example.com<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>SSN: 123-45-6789<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+          </div>
+          <div class="example-result">
+            <div class="example-result-label">What the LLM sees:</div>
+<pre><code>&lt;div&gt;
+  &lt;h2&gt;[REDACTED]&lt;/h2&gt;
+  &lt;p&gt;[REDACTED]&lt;/p&gt;
+  &lt;p&gt;[REDACTED]&lt;/p&gt;
+  &lt;p&gt;[REDACTED]&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+
+        <h3 id="input-text">Token: <code>text</code></h3>
+        <p>
+          Includes text node content. Usually combined with <code>structure</code>.
+        </p>
+
+        <h3 id="input-attributes">Token: <code>attributes</code></h3>
+        <p>
+          Includes HTML attributes (class, id, role, aria-*, etc.). By default, only
+          "safe" attributes are included. Event handlers and javascript: URLs are always filtered.
+        </p>
+
+        <h3 id="input-media">Token: <code>media</code></h3>
+        <p>
+          Includes media-specific attributes: <code>src</code>, <code>alt</code>,
+          <code>poster</code>, <code>srcset</code>. Without this token, media elements
+          show placeholders like <code>[image]</code> or <code>[video content]</code>.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Media Visibility Control</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- With media token: LLM sees the image source --&gt;</span>
+<span class="code-tag">&lt;img</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure media"</span>
+     <span class="code-attr">src</span>=<span class="code-value">"photo.jpg"</span> <span class="code-attr">alt</span>=<span class="code-value">"Team photo"</span><span class="code-tag">&gt;</span>
+
+<span class="code-comment">&lt;!-- Without media token: LLM sees placeholder --&gt;</span>
+<span class="code-tag">&lt;img</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure"</span>
+     <span class="code-attr">src</span>=<span class="code-value">"private.jpg"</span> <span class="code-attr">alt</span>=<span class="code-value">"Private photo"</span><span class="code-tag">&gt;</span></code></pre>
+          </div>
+          <div class="example-result">
+            <div class="example-result-label">What the LLM sees:</div>
+<pre><code>&lt;img src="photo.jpg" alt="Team photo"&gt;
+&lt;img&gt;[image]&lt;/img&gt;</code></pre>
+          </div>
+        </div>
+
+        <h3 id="input-all">Token: <code>all</code></h3>
+        <p>
+          Shorthand for <code>structure text attributes media</code>. Full visibility.
+          This is the default when no <code>llm-policy-input</code> is specified.
+        </p>
+
+        <h3>Combining Input Tokens</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Combination</th>
+              <th>What's Visible</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>none</code></td>
+              <td>Nothing</td>
+              <td>Secrets, admin controls</td>
+            </tr>
+            <tr>
+              <td><code>structure</code></td>
+              <td>Tags only, text redacted</td>
+              <td>Layout understanding, PII protection</td>
+            </tr>
+            <tr>
+              <td><code>structure text</code></td>
+              <td>Tags + text, no attributes</td>
+              <td>Hide data-* attributes, internal IDs</td>
+            </tr>
+            <tr>
+              <td><code>structure text attributes</code></td>
+              <td>Full HTML, no media sources</td>
+              <td>Protect private images</td>
+            </tr>
+            <tr>
+              <td><code>all</code></td>
+              <td>Everything</td>
+              <td>Public content</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="output">
+        <h2>Output (Mutation Control)</h2>
+
+        <p>
+          The <code>llm-policy-output</code> attribute controls what modifications the LLM
+          is permitted to make. By default, all content is <code>readonly</code>.
+        </p>
+
+        <h3 id="output-readonly">Token: <code>readonly</code></h3>
+        <p>
+          No modifications permitted. This is the default behavior. The LLM can see
+          the content but cannot change anything.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Protected Legal Content</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;footer</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>&amp;copy; 2024 Example Corp. All rights reserved.<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>This content is protected by copyright law.<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/footer&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h3 id="output-style">Token: <code>style</code></h3>
+        <p>
+          Allows modification of <code>class</code> and <code>style</code> attributes only.
+          The LLM can highlight content, change colors, or apply CSS classes, but cannot
+          alter the actual text or structure.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Theme-able Content</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p</span> <span class="code-attr">class</span>=<span class="code-value">"neutral"</span><span class="code-tag">&gt;</span>
+    The LLM can change this to class="highlighted" or
+    add inline styles, but cannot change these words.
+  <span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h3 id="output-annotation">Token: <code>annotation</code></h3>
+        <p>
+          Allows wrapping text in inline elements (<code>&lt;mark&gt;</code>,
+          <code>&lt;span&gt;</code>, <code>&lt;abbr&gt;</code>, etc.) without changing the
+          underlying text. This is "non-destructive" enhancement.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Annotatable Article</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;p</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
+  Machine learning is a subset of artificial intelligence.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- LLM might produce: --&gt;</span>
+<span class="code-tag">&lt;p&gt;</span>
+  <span class="code-tag">&lt;mark&gt;</span>Machine learning<span class="code-tag">&lt;/mark&gt;</span> is a subset of
+  <span class="code-tag">&lt;abbr</span> <span class="code-attr">title</span>=<span class="code-value">"AI"</span><span class="code-tag">&gt;</span>artificial intelligence<span class="code-tag">&lt;/abbr&gt;</span>.
+<span class="code-tag">&lt;/p&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h3 id="output-content">Token: <code>content</code></h3>
+        <p>
+          Allows direct modification of text nodes. The LLM can rewrite, summarize,
+          translate, or otherwise change the actual content.
+        </p>
+
+        <div class="callout callout-warning">
+          <div class="callout-title">Use With Caution</div>
+          <p>
+            The <code>content</code> token allows the LLM to change what your page says.
+            Only use this for content that is appropriate to modify, like drafts, user
+            input areas, or AI-generated sections.
+          </p>
+        </div>
+
+        <h3>Token: <code>layout</code></h3>
+        <p>Allows reordering of direct child elements. Useful for sortable lists.</p>
+
+        <h3>Token: <code>append</code></h3>
+        <p>Allows adding new child elements at the end, but not modifying existing content.</p>
+
+        <h3>Token: <code>data</code></h3>
+        <p>Allows modification of form values, data-* attributes, and structured data (JSON-LD).</p>
+
+        <h3>Token: <code>interaction</code></h3>
+        <p>Allows modification of event handlers, ARIA states, and form state.</p>
+
+        <h3 id="output-mutable">Token: <code>mutable</code></h3>
+        <p>
+          Shorthand for all permissions. The LLM has complete control over this element.
+          <strong>Use sparingly.</strong>
+        </p>
+
+        <h3>Output Token Hierarchy</h3>
+
+        <div class="diagram">
+          <table style="text-align: center;">
+            <tr>
+              <td colspan="4" style="background: #fee2e2;"><code>mutable</code> (all permissions)</td>
+            </tr>
+            <tr>
+              <td style="background: #fef3c7;"><code>content</code></td>
+              <td style="background: #fef3c7;"><code>layout</code></td>
+              <td style="background: #fef3c7;"><code>append</code></td>
+              <td style="background: #fef3c7;"><code>interaction</code></td>
+            </tr>
+            <tr>
+              <td colspan="2" style="background: #d1fae5;"><code>annotation</code></td>
+              <td colspan="2" style="background: #d1fae5;"><code>data</code></td>
+            </tr>
+            <tr>
+              <td colspan="4" style="background: #dbeafe;"><code>style</code></td>
+            </tr>
+            <tr>
+              <td colspan="4" style="background: #e5e7eb;"><code>readonly</code> (default)</td>
+            </tr>
+          </table>
+          <p style="margin-top: 12px; color: var(--gray-600); font-size: 0.875rem;">
+            Lower tokens are subsets of higher ones. <code>mutable</code> includes all permissions.
+          </p>
+        </div>
+      </section>
+
+      <section id="memory">
+        <h2>Memory (Retention Control)</h2>
+
+        <p>
+          The <code>llm-policy-memory</code> attribute controls whether and how long the
+          LLM can retain information from this content.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Token</th>
+              <th>Retention</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>none</code></td>
+              <td>Ephemeral only</td>
+              <td>Process once, then forget. <strong>Default.</strong></td>
+            </tr>
+            <tr>
+              <td><code>session</code></td>
+              <td>Session-scoped</td>
+              <td>Retain until browser session ends.</td>
+            </tr>
+            <tr>
+              <td><code>user</code></td>
+              <td>Persistent</td>
+              <td>May be stored in user profile across sessions.</td>
+            </tr>
+            <tr>
+              <td><code>training</code></td>
+              <td>Model training</td>
+              <td>Explicit authorization for training/fine-tuning.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="example-container">
+          <div class="example-header">Example: Memory Scopes</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- One-time processing, no memory --&gt;</span>
+<span class="code-tag">&lt;form</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-value">"password"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;/form&gt;</span>
+
+<span class="code-comment">&lt;!-- Remember preferences for this session --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"session"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>User prefers dark mode.<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Long-term personalization --&gt;</span>
+<span class="code-tag">&lt;section</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"user"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>User interests: cooking, hiking, photography<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/section&gt;</span>
+
+<span class="code-comment">&lt;!-- Explicit training consent --&gt;</span>
+<span class="code-tag">&lt;article</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"training"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>This content may be used for model improvement.<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Private Browsing</div>
+          <p>
+            In Private/Incognito mode, the User Agent MUST treat all content as
+            <code>llm-policy-memory="none"</code> regardless of the declared value.
+          </p>
+        </div>
+      </section>
+
+      <section id="license">
+        <h2>License Enforcement</h2>
+
+        <p>
+          The <code>llm-policy-license</code> attribute specifies the content license using
+          an SPDX identifier. The User Agent enforces license restrictions automatically.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: License-Based Restrictions</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- CC-BY-ND: No derivatives allowed --&gt;</span>
+<span class="code-tag">&lt;blockquote</span> <span class="code-attr">llm-policy-license</span>=<span class="code-value">"CC-BY-ND-4.0"</span><span class="code-tag">&gt;</span>
+  This quoted content cannot be modified, only read.
+  Even if you add llm-policy-output="mutable", it won't work.
+<span class="code-tag">&lt;/blockquote&gt;</span>
+
+<span class="code-comment">&lt;!-- CC0: Public domain, no restrictions --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-license</span>=<span class="code-value">"CC0-1.0"</span><span class="code-tag">&gt;</span>
+  This content can be freely modified.
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <p>
+          <strong>Key principle:</strong> License restrictions cannot be overridden by explicit
+          policy attributes. If a license says "no derivatives," then <code>llm-policy-output="mutable"</code>
+          will be intersected down to <code>readonly</code>.
+        </p>
+
+        <p>See <a href="advanced.html#licensing">Advanced: License Enforcement</a> for the full compatibility matrix.</p>
+      </section>
+
+      <section id="inheritance">
+        <h2>Inheritance</h2>
+
+        <p>
+          Policy attributes inherit from ancestor elements. A child element's policy is the
+          <strong>intersection</strong> of its own declaration and its inherited context.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Inheritance and Override</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+  <span class="code-comment">&lt;!-- Inherits readonly --&gt;</span>
+  <span class="code-tag">&lt;section&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>This is readonly.<span class="code-tag">&lt;/p&gt;</span>
+
+    <span class="code-comment">&lt;!-- Local override --&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>This can be edited.<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/section&gt;</span>
+<span class="code-tag">&lt;/main&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="callout callout-warning">
+          <div class="callout-title">Restriction Only</div>
+          <p>
+            A child can only <strong>restrict</strong> permissions, not expand them beyond
+            what the Global Policy allows. See <a href="advanced.html#global-policy">Global Policy</a>
+            for document-level constraints.
+          </p>
+        </div>
+      </section>
+
+      <div class="page-nav">
+        <a href="index.html">&larr; Previous: Introduction</a>
+        <a href="intent.html">Next: LLM-Intent Namespace &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      LLM Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

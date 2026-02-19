@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM-Provenance Namespace - LLM Markup Tutorial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>LLM Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="policy.html">Policy</a>
+      <a href="intent.html">Intent</a>
+      <a href="provenance.html" style="color: white;">Provenance</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="api.html">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>Provenance Namespace</h3>
+        <a href="#overview" class="active">Overview</a>
+        <a href="#source">Source Attribution</a>
+        <a href="#citation">Citation</a>
+        <a href="#confidence">Confidence</a>
+        <a href="#operation">Operations</a>
+
+        <h3>Integrity System</h3>
+        <a href="#ledger">Provenance Ledger</a>
+        <a href="#baseline">Baseline Snapshot</a>
+        <a href="#validation">Integrity Validation</a>
+        <a href="#violations">Violation Response</a>
+
+        <h3>User Inspection</h3>
+        <a href="#ui-requirements">UI Requirements</a>
+        <a href="#events">Events</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="namespace-header namespace-provenance">
+        <h2>LLM-Provenance Namespace</h2>
+        <p>Audit trail for content origin and AI modifications. Enables accountability and trust.</p>
+      </div>
+
+      <section id="overview">
+        <h2>Overview</h2>
+
+        <p>
+          The <strong>llm-provenance</strong> namespace provides transparency and accountability
+          for AI-modified content. It answers three critical questions:
+        </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <h4>Where did it come from?</h4>
+            <p>Track the original source of content with URIs and citations.</p>
+          </div>
+          <div class="card">
+            <h4>How confident is it?</h4>
+            <p>Numeric confidence scores indicate certainty levels.</p>
+          </div>
+          <div class="card">
+            <h4>What was changed?</h4>
+            <p>Detailed operation logs track every modification with explanations.</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Purpose</th>
+              <th>Example Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>llm-provenance-source</code></td>
+              <td>Canonical origin URI</td>
+              <td><code>https://example.com/article</code></td>
+            </tr>
+            <tr>
+              <td><code>llm-provenance-citation</code></td>
+              <td>Human-readable attribution</td>
+              <td><code>Smith et al., Nature 2024</code></td>
+            </tr>
+            <tr>
+              <td><code>llm-provenance-confidence</code></td>
+              <td>Certainty score (0-1)</td>
+              <td><code>0.95</code></td>
+            </tr>
+            <tr>
+              <td><code>llm-provenance-operation</code></td>
+              <td>Modification history</td>
+              <td><code>content:summarized style:highlighted</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-success">
+          <div class="callout-title">Trust Through Transparency</div>
+          <p>
+            Provenance attributes enable users to verify what they're reading. The User Agent
+            provides UI to inspect provenance, ensuring AI modifications are never hidden.
+          </p>
+        </div>
+      </section>
+
+      <section id="source">
+        <h2>Source Attribution</h2>
+
+        <p>
+          The <code>llm-provenance-source</code> attribute specifies the canonical URI where
+          the content originated. This enables verification and cross-referencing.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Source URIs</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Link to original article --&gt;</span>
+<span class="code-tag">&lt;blockquote</span>
+  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://nature.com/articles/s41586-024-07930"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>The study found significant improvements in...<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/blockquote&gt;</span>
+
+<span class="code-comment">&lt;!-- Link to Wikipedia for factual claims --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://en.wikipedia.org/wiki/Machine_learning"</span><span class="code-tag">&gt;</span>
+  Machine learning is a subset of artificial intelligence.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- DOI for academic references --&gt;</span>
+<span class="code-tag">&lt;cite</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://doi.org/10.1000/example"</span><span class="code-tag">&gt;</span>
+  Smith, J. (2024). "AI Safety Mechanisms"
+<span class="code-tag">&lt;/cite&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <p><strong>Best practices:</strong></p>
+        <ul>
+          <li>Use permanent, canonical URLs (DOIs, permalinks)</li>
+          <li>Prefer HTTPS URLs</li>
+          <li>Link to specific sections when possible (anchors)</li>
+          <li>Use Wikidata/Wikipedia for general knowledge claims</li>
+        </ul>
+      </section>
+
+      <section id="citation">
+        <h2>Citation</h2>
+
+        <p>
+          The <code>llm-provenance-citation</code> attribute provides a human-readable
+          attribution string that can be displayed to users.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Citations</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;blockquote</span>
+  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://example.com/paper.pdf"</span>
+  <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"Chen et al., ICML 2024"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Our results demonstrate a 40% improvement...<span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/blockquote&gt;</span>
+
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"World Health Organization, 2024"</span><span class="code-tag">&gt;</span>
+  Current guidelines recommend...
+<span class="code-tag">&lt;/p&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">License Attribution</div>
+          <p>
+            When content has <code>llm-policy-license</code> with <code>requiresAttribution: true</code>,
+            the <code>llm-provenance-citation</code> becomes mandatory. The User Agent validates
+            that proper attribution is present.
+          </p>
+        </div>
+      </section>
+
+      <section id="confidence">
+        <h2>Confidence</h2>
+
+        <p>
+          The <code>llm-provenance-confidence</code> attribute indicates how certain the LLM
+          is about the accuracy of generated or modified content. Values range from 0.0 (no
+          confidence) to 1.0 (complete certainty).
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Confidence Levels</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- High confidence: Well-established fact --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.99"</span><span class="code-tag">&gt;</span>
+  The Earth orbits the Sun.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- Moderate confidence: Recent data --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.75"</span><span class="code-tag">&gt;</span>
+  Current market trends suggest growth in Q4.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- Low confidence: Speculation --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.35"</span><span class="code-tag">&gt;</span>
+  This interpretation of the poem suggests themes of isolation.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- Very low confidence: Uncertain --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.15"</span><span class="code-tag">&gt;</span>
+  The exact date of this event is unclear.
+<span class="code-tag">&lt;/p&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h3>Confidence Guidelines</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Range</th>
+              <th>Interpretation</th>
+              <th>Example Content</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0.9 - 1.0</td>
+              <td>Highly confident</td>
+              <td>Established facts, verified data</td>
+            </tr>
+            <tr>
+              <td>0.7 - 0.9</td>
+              <td>Confident</td>
+              <td>Recent research, reliable sources</td>
+            </tr>
+            <tr>
+              <td>0.5 - 0.7</td>
+              <td>Moderate</td>
+              <td>Interpretations, extrapolations</td>
+            </tr>
+            <tr>
+              <td>0.3 - 0.5</td>
+              <td>Low</td>
+              <td>Speculation, uncertain claims</td>
+            </tr>
+            <tr>
+              <td>0.0 - 0.3</td>
+              <td>Very low</td>
+              <td>Guesses, highly uncertain</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="operation">
+        <h2>Operations</h2>
+
+        <p>
+          The <code>llm-provenance-operation</code> attribute records what modifications the
+          LLM made to content. Each operation is logged with a <strong>layer</strong> and an
+          <strong>explanation</strong>.
+        </p>
+
+        <h3>Operation Syntax</h3>
+
+        <pre><code>llm-provenance-operation="layer:explanation [layer:explanation ...]"</code></pre>
+
+        <h3>Operation Layers</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>What Changed</th>
+              <th>Related Output Tokens</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>content</code></td>
+              <td>Text content</td>
+              <td><code>content</code>, <code>mutable</code></td>
+            </tr>
+            <tr>
+              <td><code>style</code></td>
+              <td>CSS classes, inline styles</td>
+              <td><code>style</code></td>
+            </tr>
+            <tr>
+              <td><code>interaction</code></td>
+              <td>Event handlers, ARIA states</td>
+              <td><code>interaction</code></td>
+            </tr>
+            <tr>
+              <td><code>topology</code></td>
+              <td>Structure, order, new elements</td>
+              <td><code>layout</code>, <code>append</code></td>
+            </tr>
+            <tr>
+              <td><code>data</code></td>
+              <td>data-* attributes, form values</td>
+              <td><code>data</code></td>
+            </tr>
+            <tr>
+              <td><code>intent</code></td>
+              <td>Intent attributes themselves</td>
+              <td>(meta-level)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="example-container">
+          <div class="example-header">Example: Operation Logging</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Single operation --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:summarized-from-500-words"</span><span class="code-tag">&gt;</span>
+  This is a concise summary of the key points.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- Multiple operations --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:translated-from-spanish style:added-emphasis"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;mark&gt;</span>Important:<span class="code-tag">&lt;/mark&gt;</span> This text was translated and highlighted.
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- Structural change --&gt;</span>
+<span class="code-tag">&lt;ul</span> <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"topology:reordered-by-priority"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;li&gt;</span>Critical task (was #3)<span class="code-tag">&lt;/li&gt;</span>
+  <span class="code-tag">&lt;li&gt;</span>Important task (was #1)<span class="code-tag">&lt;/li&gt;</span>
+  <span class="code-tag">&lt;li&gt;</span>Nice to have (was #2)<span class="code-tag">&lt;/li&gt;</span>
+<span class="code-tag">&lt;/ul&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="ledger">
+        <h2>Provenance Ledger</h2>
+
+        <p>
+          The User Agent maintains an internal <strong>Provenance Ledger</strong> that records
+          all LLM-initiated modifications. This ledger is:
+        </p>
+
+        <ul>
+          <li><strong>Append-only:</strong> Entries cannot be deleted or modified</li>
+          <li><strong>Tamper-evident:</strong> Unauthorized changes are detected</li>
+          <li><strong>Read-only to scripts:</strong> Pages can inspect but not modify</li>
+          <li><strong>User-inspectable:</strong> The UA provides UI to view the ledger</li>
+        </ul>
+
+        <h3>Ledger Entry Structure</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code></td>
+              <td>String</td>
+              <td>Unique identifier for this entry</td>
+            </tr>
+            <tr>
+              <td><code>timestamp</code></td>
+              <td>Number</td>
+              <td>When the modification occurred</td>
+            </tr>
+            <tr>
+              <td><code>target</code></td>
+              <td>Element</td>
+              <td>The element that was modified</td>
+            </tr>
+            <tr>
+              <td><code>layer</code></td>
+              <td>String</td>
+              <td>content, style, interaction, etc.</td>
+            </tr>
+            <tr>
+              <td><code>explanation</code></td>
+              <td>String</td>
+              <td>Why the change was made</td>
+            </tr>
+            <tr>
+              <td><code>originalValue</code></td>
+              <td>Any</td>
+              <td>Value before modification</td>
+            </tr>
+            <tr>
+              <td><code>newValue</code></td>
+              <td>Any</td>
+              <td>Value after modification</td>
+            </tr>
+            <tr>
+              <td><code>agentId</code></td>
+              <td>String?</td>
+              <td>Optional LLM agent identifier</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="baseline">
+        <h2>Baseline Snapshot</h2>
+
+        <p>
+          The User Agent captures a <strong>baseline snapshot</strong> of the DOM at specific
+          points. This enables detecting changes that weren't properly logged.
+        </p>
+
+        <h3>When Baselines Are Captured</h3>
+
+        <ul>
+          <li><strong>DOMContentLoaded:</strong> Initial page structure</li>
+          <li><strong>After SSR hydration:</strong> Server-rendered content</li>
+          <li><strong>Before LLM interaction:</strong> Pre-modification state</li>
+          <li><strong>Explicit snapshot requests:</strong> Via API</li>
+        </ul>
+
+        <div class="diagram">
+          <div class="diagram-flow">
+            <div class="diagram-box" style="background: var(--gray-200);">Server HTML</div>
+            <div class="diagram-arrow">&rarr;</div>
+            <div class="diagram-box" style="background: var(--success); color: white;">Baseline</div>
+            <div class="diagram-arrow">&rarr;</div>
+            <div class="diagram-box" style="background: var(--secondary); color: white;">LLM Modifies</div>
+            <div class="diagram-arrow">&rarr;</div>
+            <div class="diagram-box" style="background: var(--warning); color: white;">Diff Detected</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="validation">
+        <h2>Integrity Validation</h2>
+
+        <p>
+          The User Agent continuously validates that all DOM modifications are properly logged:
+        </p>
+
+        <h3>Validation Algorithm</h3>
+
+        <ol>
+          <li>Observe all DOM mutations via MutationObserver</li>
+          <li>For each mutation, check if it has a corresponding ledger entry</li>
+          <li>Verify the layer in the entry matches the type of change</li>
+          <li>Confirm the <code>llm-provenance-operation</code> attribute is present</li>
+          <li>If any check fails, flag as integrity violation</li>
+        </ol>
+
+        <h3>Violation Types</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>missing-ledger-entry</code></td>
+              <td>DOM changed but no ledger entry exists</td>
+            </tr>
+            <tr>
+              <td><code>layer-mismatch</code></td>
+              <td>Declared layer doesn't match actual change</td>
+            </tr>
+            <tr>
+              <td><code>tampered-attribute</code></td>
+              <td>The operation attribute was modified after writing</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="violations">
+        <h2>Violation Response</h2>
+
+        <p>
+          When an integrity violation is detected, the User Agent can take several actions:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>flag</code></td>
+              <td>Mark the element visually as having a violation</td>
+            </tr>
+            <tr>
+              <td><code>warn</code></td>
+              <td>Log to console and show user notification</td>
+            </tr>
+            <tr>
+              <td><code>block</code></td>
+              <td>Prevent the unauthorized mutation</td>
+            </tr>
+            <tr>
+              <td><code>revert</code></td>
+              <td>Restore the element to its baseline state</td>
+            </tr>
+            <tr>
+              <td><code>report</code></td>
+              <td>Send violation details to reporting endpoint</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">Security Implication</div>
+          <p>
+            Integrity validation ensures that if an LLM (or malicious script) modifies
+            content without proper provenance logging, the User Agent detects and flags it.
+            Users can always see what was changed and by whom.
+          </p>
+        </div>
+      </section>
+
+      <section id="ui-requirements">
+        <h2>UI Requirements</h2>
+
+        <p>
+          The specification requires User Agents to provide ways for users to inspect provenance:
+        </p>
+
+        <h3>Mandatory UI Elements</h3>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Context Menu</h4>
+            <p>
+              Right-click on any element should offer "View LLM Provenance" option,
+              showing source, confidence, and modification history.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Trust Panel</h4>
+            <p>
+              A dedicated panel (like DevTools) showing the full Provenance Ledger
+              for the current document.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Visual Indicators</h4>
+            <p>
+              Modified elements should have a subtle visual indicator (icon, border)
+              showing they contain AI-generated content.
+            </p>
+          </div>
+
+          <div class="card">
+            <h4>Violation Alerts</h4>
+            <p>
+              Integrity violations should be prominently displayed to users,
+              not hidden in console logs.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="events">
+        <h2>Events</h2>
+
+        <p>
+          The User Agent fires events that pages can listen to:
+        </p>
+
+        <h3><code>llmprovenancechange</code></h3>
+
+        <p>Fired when a new entry is added to the Provenance Ledger.</p>
+
+        <pre><code>document.addEventListener('llmprovenancechange', (event) => {
+  console.log('Modified:', event.target);
+  console.log('Layer:', event.layer);
+  console.log('Explanation:', event.explanation);
+});</code></pre>
+
+        <h3><code>llmintegrityviolation</code></h3>
+
+        <p>Fired when an integrity violation is detected.</p>
+
+        <pre><code>document.addEventListener('llmintegrityviolation', (event) => {
+  console.error('Violation on:', event.target);
+  console.error('Type:', event.violationType);
+  console.error('Reverted:', event.reverted);
+});</code></pre>
+
+        <div class="callout callout-warning">
+          <div class="callout-title">Cannot Suppress</div>
+          <p>
+            Pages can listen to these events for logging or analytics, but they
+            <strong>cannot</strong> prevent or suppress integrity violation detection.
+            The User Agent always performs validation regardless of page scripts.
+          </p>
+        </div>
+      </section>
+
+      <div class="page-nav">
+        <a href="intent.html">&larr; Previous: LLM-Intent Namespace</a>
+        <a href="advanced.html">Next: Advanced Topics &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      LLM Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
