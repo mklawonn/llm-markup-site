@@ -94,12 +94,13 @@
         </table>
 
         <div class="callout callout-danger">
-          <div class="callout-title">Hard Enforcement</div>
+          <div class="callout-title">Enforcement by Filtering and Blocking</div>
           <p>
-            Unlike intent attributes (which are guidance), policy attributes are
-            <strong>mechanistically enforced</strong> by the User Agent. The LLM cannot
-            violate them because restricted content never reaches the LLM, and unauthorized
-            mutations are blocked before they happen.
+            Policy attributes are enforced by the User Agent as a <strong>barrier</strong>:
+            restricted content is redacted before the LLM sees it, and unauthorized mutations
+            are blocked before they happen. This is distinct from the Intent namespace, which
+            is also processed deterministically by the UA but works by <em>framing</em> what
+            the LLM receives &mdash; not by filtering or blocking it.
           </p>
         </div>
       </section>

@@ -50,25 +50,29 @@
     <main>
       <div class="namespace-header namespace-intent">
         <h2>LLM-Intent Namespace</h2>
-        <p>Semantic guidance for the LLM. Influences how content is interpreted and processed.</p>
+        <p>Deterministic prompt construction. The UA translates semantic markers into the framing and instructions the LLM sees.</p>
       </div>
 
       <section id="overview">
         <h2>Overview</h2>
 
         <p>
-          The <strong>llm-intent</strong> namespace provides semantic hints that guide how the
-          LLM interprets and handles content. Unlike policy attributes (which are hard constraints),
-          intent attributes are <strong>soft guidance</strong> &mdash; they influence the LLM's
-          behavior but don't mechanistically block actions.
+          The <strong>llm-intent</strong> namespace governs the <strong>deterministic construction
+          of prompts</strong>. The User Agent translates these semantic markers into the framing
+          and instructions seen by the LLM. Unlike policy attributes &mdash; which enforce hard
+          boundaries by <strong>redacting content</strong> and <strong>blocking mutations</strong>
+          &mdash; intent attributes work by shaping <em>how the LLM receives and understands</em>
+          the content, controlling its context and direction without filtering or blocking anything.
         </p>
 
         <div class="callout callout-info">
-          <div class="callout-title">How Intent Works</div>
+          <div class="callout-title">Mechanistic, Not "Soft"</div>
           <p>
-            The User Agent <strong>deterministically</strong> translates intent attributes into
-            system prompt fragments. The LLM receives these as context, helping it understand
-            the content's purpose and appropriate handling.
+            Intent processing is <strong>deterministic</strong>: the User Agent parses intent
+            attributes and produces a predictable system prompt fragment. The LLM receives this
+            framing as authoritative instructions. The distinction from Policy is not "hard vs
+            soft" but <em>how</em> the UA acts: Policy filters and blocks; Intent frames and
+            instructs.
           </p>
         </div>
 

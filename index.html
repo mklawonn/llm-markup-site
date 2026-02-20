@@ -194,6 +194,18 @@
             requirements, and the browser enforces them mechanistically.
           </p>
         </div>
+
+        <div class="callout callout-warning">
+          <div class="callout-title">Cooperative Standard</div>
+          <p>
+            Like <code>robots.txt</code>, LLM Markup is a <strong>cooperative standard</strong>
+            that relies on User Agent compliance. It is not a cryptographic security measure or
+            a legal enforcement tool. A conforming User Agent will strictly and mechanistically
+            enforce these policies, but a non-compliant or "rogue" agent could theoretically
+            ignore them. This standard governs interactions within trusted, compliant software
+            environments.
+          </p>
+        </div>
       </section>
 
       <section id="key-concepts">
@@ -218,10 +230,11 @@
 
           <div class="card">
             <h4><span class="token token-intent">llm-intent-*</span></h4>
-            <p><strong>Semantic Guidance</strong></p>
+            <p><strong>Prompt Construction</strong></p>
             <p>
-              Soft hints for the LLM. Provides context about content meaning, importance, and
-              desired handling. Influences prompt construction.
+              The UA deterministically translates semantic markers into the framing and
+              instructions the LLM sees. Shapes context and direction without filtering
+              or blocking content.
             </p>
             <a href="intent.html" class="btn btn-secondary">Learn More &rarr;</a>
           </div>
@@ -263,6 +276,32 @@
     <span class="code-tag">&lt;p&gt;</span>This CAN be changed<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
 <span class="code-tag">&lt;/main&gt;</span></code></pre>
+
+        <h3>Intersection Semantics</h3>
+
+        <p>
+          When multiple authoritative policies apply &mdash; such as global constraints,
+          license restrictions, or explicit inheritance across Shadow DOM boundaries &mdash;
+          the effective policy is the <strong>intersection</strong> of all applicable rules.
+          Both parties must agree for a permission to be granted.
+        </p>
+
+        <pre><code><span class="code-comment">&lt;!-- Global constraint: block-selectors matches .pii --&gt;</span>
+<span class="code-comment">&lt;!-- Local attribute below is ignored; intersection wins --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"pii"</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"all"</span><span class="code-tag">&gt;</span>
+  Hidden &mdash; the constraint overrides the local attribute.
+<span class="code-tag">&lt;/div&gt;</span></code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Intersection vs Override</div>
+          <p>
+            Intersection semantics apply to <strong>constraints</strong> (hard ceilings set by global
+            policy, licenses, or inheritance). They are distinct from <strong>global defaults</strong>,
+            which follow override semantics: a local attribute can freely override a default, but
+            can never break through a constraint.
+            See <a href="advanced.html#precedence">Advanced: Precedence Rules</a> for the full breakdown.
+          </p>
+        </div>
 
         <h3>Secure Defaults</h3>
 

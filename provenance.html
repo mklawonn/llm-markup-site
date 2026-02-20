@@ -33,6 +33,7 @@
         <a href="#citation">Citation</a>
         <a href="#confidence">Confidence</a>
         <a href="#operation">Operations</a>
+        <a href="#multi-hop">Multi-hop Provenance</a>
 
         <h3>Integrity System</h3>
         <a href="#ledger">Provenance Ledger</a>
@@ -341,6 +342,74 @@
         </div>
       </section>
 
+      <section id="multi-hop">
+        <h2>Multi-hop &amp; Nested Provenance</h2>
+
+        <p>
+          Content increasingly passes through multiple LLM agents before reaching the user
+          &mdash; a summary of a summary, or a translation of a synthesis. The standard handles
+          these "chains of custody" through <strong>node-scoped attribution</strong>.
+        </p>
+
+        <h3>Node Isolation</h3>
+
+        <p>
+          Provenance attributes are local to the node they describe. If an LLM-generated
+          summary is embedded within another document, it retains its own
+          <code>llm-provenance-*</code> attributes independently of the surrounding document's
+          provenance.
+        </p>
+
+        <h3>The Source Chain</h3>
+
+        <p>
+          The <code>llm-provenance-source</code> attribute links to the <em>immediate upstream
+          authority</em>. In a multi-hop scenario, each hop links to its own upstream source,
+          creating a traversable chain.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Example: Multi-hop Source Chain</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Original article (Original Site) --&gt;</span>
+<span class="code-tag">&lt;article</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://original-site.com/article"</span><span class="code-tag">&gt;</span>
+  Full article text...
+<span class="code-tag">&lt;/article&gt;</span>
+
+<span class="code-comment">&lt;!-- Gemini-generated fragment points to Original Site --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://original-site.com/article"</span>
+   <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:summarized"</span><span class="code-tag">&gt;</span>
+  Gemini summary of original article...
+<span class="code-tag">&lt;/p&gt;</span>
+
+<span class="code-comment">&lt;!-- Browser-level summary points to Gemini's URI --&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://gemini-source.example/fragment"</span>
+   <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:summarized content:translated-to-french"</span><span class="code-tag">&gt;</span>
+  Browser summary of Gemini summary, translated...
+<span class="code-tag">&lt;/p&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <h3>Cumulative Operations</h3>
+
+        <p>
+          The <code>llm-provenance-operation</code> attribute is a space-separated list.
+          As content moves through multiple LLM "hops," each agent <strong>appends</strong>
+          its operation to the existing list rather than replacing it, creating a persistent
+          audit trail of the full transformation history.
+        </p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Reading the Operation Chain</div>
+          <p>
+            Operations are ordered chronologically left-to-right. The leftmost operations
+            are those applied by the earliest agent in the chain; the rightmost are most
+            recent. The User Agent prevents any hop from removing or reordering earlier
+            entries.
+          </p>
+        </div>
+      </section>
+
       <section id="ledger">
         <h2>Provenance Ledger</h2>
 
@@ -412,12 +481,38 @@
       </section>
 
       <section id="baseline">
-        <h2>Baseline Snapshot</h2>
+        <h2>Baseline Snapshot &amp; Integrity Rules</h2>
 
         <p>
           The User Agent captures a <strong>baseline snapshot</strong> of the DOM at specific
-          points. This enables detecting changes that weren't properly logged.
+          points and enforces three integrity rules to keep the provenance trail trustworthy:
         </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <h4>1. Baseline Trust</h4>
+            <p>
+              Provenance attributes served with the initial document are treated as the
+              "original state." The User Agent trusts these as the starting point of the ledger.
+            </p>
+          </div>
+          <div class="card">
+            <h4>2. Append-Only History</h4>
+            <p>
+              New operations are <strong>appended</strong> to the history, never overwriting
+              or deleting existing entries. The ledger only ever grows.
+            </p>
+          </div>
+          <div class="card">
+            <h4>3. Tamper Protection</h4>
+            <p>
+              If a page script attempts to modify or delete <code>llm-provenance</code>
+              attributes to hide AI involvement, the User Agent detects the mismatch against
+              its internal ledger and <strong>restores the correct attributes</strong>,
+              keeping the audit trail immutable for the session.
+            </p>
+          </div>
+        </div>
 
         <h3>When Baselines Are Captured</h3>
 

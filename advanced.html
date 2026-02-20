@@ -103,42 +103,72 @@
 
         <h3 id="precedence">Precedence Rules</h3>
 
-        <div class="diagram">
+        <p>
+          The Global Policy object supports two distinct mechanisms with different precedence
+          semantics. Understanding the difference is essential for writing correct policies.
+        </p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Constraints &mdash; Intersection Semantics</h4>
+            <p>
+              Rules in the <code>constraints</code> object (e.g. <code>block-selectors</code>,
+              <code>category-rules</code>) form a <strong>hard ceiling</strong>. They
+              <strong>cannot be overridden</strong> by local element attributes. The effective
+              policy is the intersection of the constraint and any local attribute.
+            </p>
+            <pre><code><span class="code-comment">// Global constraint blocks PII</span>
+"block-selectors": [".pii"]
+
+<span class="code-comment">// Local attribute is ignored &mdash; intersection wins</span>
+&lt;div class="pii" llm-policy-input="all"&gt;
+  Still hidden.
+&lt;/div&gt;</code></pre>
+          </div>
+          <div class="card">
+            <h4>Defaults &mdash; Override Semantics</h4>
+            <p>
+              Rules in the <code>defaults</code> object act as <strong>fallbacks</strong>
+              for elements that have no explicit attribute. They <strong>can be overridden</strong>
+              by a local element attribute.
+            </p>
+            <pre><code><span class="code-comment">// Global default: readonly</span>
+"defaults": { "llm-policy-output": ["readonly"] }
+
+<span class="code-comment">// Local attribute overrides the default</span>
+&lt;div llm-policy-output="mutable"&gt;
+  This IS editable.
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+
+        <div class="diagram" style="margin-top: 24px;">
           <table style="text-align: center;">
             <tr>
               <td style="background: #fecaca; padding: 16px;">
-                <strong>1. HTTP Header</strong><br>
-                <small>Highest authority &mdash; cannot be overridden</small>
-              </td>
-            </tr>
-            <tr>
-              <td style="background: #fed7aa; padding: 16px;">
-                <strong>2. Meta Tag</strong><br>
-                <small>Can only restrict, not expand header policy</small>
+                <strong>1. Global Constraints</strong><br>
+                <small>Hard ceiling &mdash; intersection semantics, cannot be overridden</small>
               </td>
             </tr>
             <tr>
               <td style="background: #fef3c7; padding: 16px;">
-                <strong>3. Element Attributes</strong><br>
-                <small>Local overrides within global constraints</small>
+                <strong>2. Local Element Attributes</strong><br>
+                <small>Override defaults, but cannot exceed constraints</small>
               </td>
             </tr>
             <tr>
               <td style="background: #d1fae5; padding: 16px;">
+                <strong>3. Global Defaults</strong><br>
+                <small>Fallback &mdash; override semantics, applied when no local attribute exists</small>
+              </td>
+            </tr>
+            <tr>
+              <td style="background: #e5e7eb; padding: 16px;">
                 <strong>4. Specification Defaults</strong><br>
-                <small>Fallback when nothing is specified</small>
+                <small>Last resort when nothing else applies (<code>all</code> / <code>readonly</code> / <code>none</code>)</small>
               </td>
             </tr>
           </table>
-        </div>
-
-        <div class="callout callout-info">
-          <div class="callout-title">Intersection Semantics</div>
-          <p>
-            When both header and meta tag specify policies, the effective policy is
-            the <strong>intersection</strong> of both. The meta tag can only further
-            restrict what the header allows, never expand permissions.
-          </p>
         </div>
 
         <h3 id="constraints">Constraints</h3>
