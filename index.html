@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLM Markup Tutorial - A Standard for AI-Web Interaction</title>
+  <title>Web Agent Markup Tutorial - A Standard for AI-Web Interaction</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
   <div class="container">
-    <h1>LLM Markup Tutorial</h1>
+    <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="policy.html">Policy</a>
@@ -28,15 +28,15 @@
     <aside class="sidebar">
       <nav>
         <h3>Introduction</h3>
-        <a href="#what-is-llm-markup" class="active">What is LLM Markup?</a>
+        <a href="#what-is-web-agent-markup" class="active">What is Web Agent Markup?</a>
         <a href="#the-problem">The Problem</a>
         <a href="#the-solution">The Solution</a>
         <a href="#key-concepts">Key Concepts</a>
 
         <h3>Namespaces</h3>
-        <a href="policy.html">LLM-Policy</a>
-        <a href="intent.html">LLM-Intent</a>
-        <a href="provenance.html">LLM-Provenance</a>
+        <a href="policy.html">WAM-Policy</a>
+        <a href="intent.html">WAM-Intent</a>
+        <a href="provenance.html">WAM-Provenance</a>
 
         <h3>Advanced Topics</h3>
         <a href="advanced.html#global-policy">Global Policy</a>
@@ -51,16 +51,16 @@
 
     <main>
       <div class="hero">
-        <h1>LLM Markup</h1>
+        <h1>Web Agent Markup</h1>
         <p>A declarative standard for controlling how AI assistants interact with web content</p>
-        <a href="#what-is-llm-markup" class="btn btn-primary">Get Started</a>
+        <a href="#what-is-web-agent-markup" class="btn btn-primary">Get Started</a>
       </div>
 
-      <section id="what-is-llm-markup">
-        <h2>What is LLM Markup?</h2>
+      <section id="what-is-web-agent-markup">
+        <h2>What is Web Agent Markup?</h2>
 
         <p>
-          <strong>LLM Markup (LLMPM)</strong> is a proposed web standard that provides a declarative
+          <strong>Web Agent Markup (WAM)</strong> is a proposed web standard that provides a declarative
           contract between web content authors and LLM-infused User Agents (browsers with built-in AI assistants).
         </p>
 
@@ -77,7 +77,7 @@
         </ul>
 
         <p>
-          LLM Markup provides all of this through simple HTML attributes that are ignored by browsers
+          Web Agent Markup provides all of this through simple HTML attributes that are ignored by browsers
           that don't support them, ensuring backward compatibility.
         </p>
 
@@ -85,13 +85,13 @@
           <div class="example-header">Quick Example</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- AI can see and annotate, but not edit text --&gt;</span>
-<span class="code-tag">&lt;article</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;article</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;h1&gt;</span>My Blog Post<span class="code-tag">&lt;/h1&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>This content can be highlighted but not rewritten.<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/article&gt;</span>
 
 <span class="code-comment">&lt;!-- AI cannot see this at all --&gt;</span>
-<span class="code-tag">&lt;aside</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;aside</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Secret admin notes<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/aside&gt;</span></code></pre>
           </div>
@@ -155,14 +155,14 @@
         <h2>The Solution</h2>
 
         <p>
-          LLM Markup solves these problems by providing a <strong>declarative contract</strong> that
+          Web Agent Markup solves these problems by providing a <strong>declarative contract</strong> that
           content authors can use to specify their requirements. Crucially, this contract is enforced
           by the <strong>User Agent (browser)</strong>, not the LLM itself.
         </p>
 
         <div class="diagram">
           <div class="diagram-flow">
-            <div class="diagram-box" style="background: var(--gray-200);">Web Content + LLM Markup</div>
+            <div class="diagram-box" style="background: var(--gray-200);">Web Content + Web Agent Markup</div>
             <div class="diagram-arrow">&rarr;</div>
             <div class="diagram-box" style="background: var(--primary); color: white;">User Agent (Enforcer)</div>
             <div class="diagram-arrow">&rarr;</div>
@@ -181,7 +181,7 @@
         </p>
 
         <ul>
-          <li>The User Agent parses LLM Markup attributes <strong>deterministically</strong></li>
+          <li>The User Agent parses Web Agent Markup attributes <strong>deterministically</strong></li>
           <li>Hidden content is <strong>never sent</strong> to the LLM</li>
           <li>Unauthorized mutations are <strong>blocked</strong> before they happen</li>
           <li>Policies are <strong>testable</strong> and <strong>auditable</strong></li>
@@ -190,7 +190,7 @@
         <div class="callout callout-success">
           <div class="callout-title">Key Insight</div>
           <p>
-            LLM Markup is similar to CSP (Content Security Policy) in philosophy: declare your
+            Web Agent Markup is similar to CSP (Content Security Policy) in philosophy: declare your
             requirements, and the browser enforces them mechanistically.
           </p>
         </div>
@@ -198,7 +198,7 @@
         <div class="callout callout-warning">
           <div class="callout-title">Cooperative Standard</div>
           <p>
-            Like <code>robots.txt</code>, LLM Markup is a <strong>cooperative standard</strong>
+            Like <code>robots.txt</code>, Web Agent Markup is a <strong>cooperative standard</strong>
             that relies on User Agent compliance. It is not a cryptographic security measure or
             a legal enforcement tool. A conforming User Agent will strictly and mechanistically
             enforce these policies, but a non-compliant or "rogue" agent could theoretically
@@ -214,12 +214,12 @@
         <h3>The Three Namespaces</h3>
 
         <p>
-          LLM Markup is organized into three orthogonal namespaces, each addressing a different concern:
+          Web Agent Markup is organized into three orthogonal namespaces, each addressing a different concern:
         </p>
 
         <div class="grid-3">
           <div class="card">
-            <h4><span class="token token-output">llm-policy-*</span></h4>
+            <h4><span class="token token-output">wam-policy-*</span></h4>
             <p><strong>Hard Constraints</strong></p>
             <p>
               Mechanistically enforced by the User Agent. Controls visibility, mutations, and
@@ -229,7 +229,7 @@
           </div>
 
           <div class="card">
-            <h4><span class="token token-intent">llm-intent-*</span></h4>
+            <h4><span class="token token-intent">wam-intent-*</span></h4>
             <p><strong>Prompt Construction</strong></p>
             <p>
               The UA deterministically translates semantic markers into the framing and
@@ -240,7 +240,7 @@
           </div>
 
           <div class="card">
-            <h4><span class="token token-provenance">llm-provenance-*</span></h4>
+            <h4><span class="token token-provenance">wam-provenance-*</span></h4>
             <p><strong>Audit Trail</strong></p>
             <p>
               Tracks content sources and modifications. Enables accountability by recording
@@ -257,7 +257,7 @@
         </p>
 
         <pre><code><span class="code-comment">&lt;!-- Multiple tokens combine their permissions --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"style annotation content"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"style annotation content"</span><span class="code-tag">&gt;</span>
   Can change styles, add annotations, and edit text
 <span class="code-tag">&lt;/div&gt;</span></code></pre>
 
@@ -267,11 +267,11 @@
           Policies inherit from parent elements unless overridden locally:
         </p>
 
-        <pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+        <pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
   <span class="code-comment">&lt;!-- Everything here is readonly by default --&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Cannot be changed<span class="code-tag">&lt;/p&gt;</span>
 
-  <span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
     <span class="code-comment">&lt;!-- This section overrides the parent --&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>This CAN be changed<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
@@ -288,7 +288,7 @@
 
         <pre><code><span class="code-comment">&lt;!-- Global constraint: block-selectors matches .pii --&gt;</span>
 <span class="code-comment">&lt;!-- Local attribute below is ignored; intersection wins --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"pii"</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"all"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"pii"</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"all"</span><span class="code-tag">&gt;</span>
   Hidden &mdash; the constraint overrides the local attribute.
 <span class="code-tag">&lt;/div&gt;</span></code></pre>
 
@@ -315,17 +315,17 @@
           </thead>
           <tbody>
             <tr>
-              <td><code>llm-policy-input</code></td>
+              <td><code>wam-policy-input</code></td>
               <td><span class="token token-input">all</span></td>
               <td>Content is visible by default; authors opt-out of visibility</td>
             </tr>
             <tr>
-              <td><code>llm-policy-output</code></td>
+              <td><code>wam-policy-output</code></td>
               <td><span class="token token-output">readonly</span></td>
               <td>Content is immutable by default; authors opt-in to mutations</td>
             </tr>
             <tr>
-              <td><code>llm-policy-memory</code></td>
+              <td><code>wam-policy-memory</code></td>
               <td><span class="token token-memory">none</span></td>
               <td>No data retention by default; authors opt-in to persistence</td>
             </tr>
@@ -348,17 +348,17 @@
 
         <div class="grid-3">
           <a href="policy.html" class="card" style="text-decoration: none; color: inherit;">
-            <h4 style="color: var(--danger);">LLM-Policy &rarr;</h4>
+            <h4 style="color: var(--danger);">WAM-Policy &rarr;</h4>
             <p>Learn about visibility, mutation, and retention controls</p>
           </a>
 
           <a href="intent.html" class="card" style="text-decoration: none; color: inherit;">
-            <h4 style="color: var(--warning);">LLM-Intent &rarr;</h4>
+            <h4 style="color: var(--warning);">WAM-Intent &rarr;</h4>
             <p>Learn about semantic categories and importance levels</p>
           </a>
 
           <a href="provenance.html" class="card" style="text-decoration: none; color: inherit;">
-            <h4 style="color: var(--secondary);">LLM-Provenance &rarr;</h4>
+            <h4 style="color: var(--secondary);">WAM-Provenance &rarr;</h4>
             <p>Learn about source tracking and modification history</p>
           </a>
         </div>
@@ -366,7 +366,7 @@
 
       <div class="page-nav">
         <span></span>
-        <a href="policy.html">Next: LLM-Policy Namespace &rarr;</a>
+        <a href="policy.html">Next: WAM-Policy Namespace &rarr;</a>
       </div>
     </main>
 
@@ -376,8 +376,8 @@
 <footer>
   <div class="container">
     <p>
-      LLM Markup Tutorial &mdash; Based on the
-      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+      Web Agent Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/web-agent-markup">Web Agent Markup Specification</a>
     </p>
   </div>
 </footer>

@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Examples - LLM Markup Tutorial</title>
+  <title>Examples - Web Agent Markup Tutorial</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
   <div class="container">
-    <h1>LLM Markup Tutorial</h1>
+    <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="policy.html">Policy</a>
@@ -47,7 +47,7 @@
       <h1>Examples</h1>
 
       <p>
-        This page provides complete, real-world examples of LLM Markup in action.
+        This page provides complete, real-world examples of Web Agent Markup in action.
         Each example demonstrates common patterns and best practices.
       </p>
 
@@ -63,27 +63,27 @@
           <div class="example-header">news-article.html</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;article</span>
-  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://news.example/article/12345"</span>
-  <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"TechNews Daily"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://news.example/article/12345"</span>
+  <span class="code-attr">wam-provenance-citation</span>=<span class="code-value">"TechNews Daily"</span><span class="code-tag">&gt;</span>
 
   <span class="code-comment">&lt;!-- Header: Important, read-only --&gt;</span>
-  <span class="code-tag">&lt;header</span> <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"high"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;header</span> <span class="code-attr">wam-intent-importance</span>=<span class="code-value">"high"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;h1&gt;</span>Major Tech Company Announces New Product<span class="code-tag">&lt;/h1&gt;</span>
     <span class="code-tag">&lt;p</span> <span class="code-attr">class</span>=<span class="code-value">"byline"</span><span class="code-tag">&gt;</span>By Jane Smith &bull; January 15, 2024<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;/header&gt;</span>
 
   <span class="code-comment">&lt;!-- Summary: Critical for context --&gt;</span>
-  <span class="code-tag">&lt;div</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"summary"</span>
-       <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">wam-intent-category</span>=<span class="code-value">"summary"</span>
+       <span class="code-attr">wam-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>The company unveiled its latest product at the annual
     conference, featuring improved performance and new AI capabilities.<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
 
   <span class="code-comment">&lt;!-- Body: Can be annotated (highlights, links) but not edited --&gt;</span>
-  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"article-body"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation style"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"article-body"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation style"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>
       In a keynote presentation that lasted over two hours, CEO
-      <span class="code-tag">&lt;span</span> <span class="code-attr">llm-intent-entity</span>=<span class="code-value">"https://wikidata.org/wiki/Q..."</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;span</span> <span class="code-attr">wam-intent-entity</span>=<span class="code-value">"https://wikidata.org/wiki/Q..."</span><span class="code-tag">&gt;</span>
         John Doe
       <span class="code-tag">&lt;/span&gt;</span>
       demonstrated the new features to an audience of thousands.
@@ -91,9 +91,9 @@
 
     <span class="code-comment">&lt;!-- Quote: Strictly read-only --&gt;</span>
     <span class="code-tag">&lt;blockquote</span>
-      <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span>
-      <span class="code-attr">llm-intent-category</span>=<span class="code-value">"quote"</span>
-      <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"John Doe, CEO"</span><span class="code-tag">&gt;</span>
+      <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span>
+      <span class="code-attr">wam-intent-category</span>=<span class="code-value">"quote"</span>
+      <span class="code-attr">wam-provenance-citation</span>=<span class="code-value">"John Doe, CEO"</span><span class="code-tag">&gt;</span>
       <span class="code-tag">&lt;p&gt;</span>"This is the most significant product we've ever built.
       It will change how people work."<span class="code-tag">&lt;/p&gt;</span>
     <span class="code-tag">&lt;/blockquote&gt;</span>
@@ -102,9 +102,9 @@
   <span class="code-tag">&lt;/div&gt;</span>
 
   <span class="code-comment">&lt;!-- Comments: Append-only (can add, not edit existing) --&gt;</span>
-  <span class="code-tag">&lt;section</span> <span class="code-attr">class</span>=<span class="code-value">"comments"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"append"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">class</span>=<span class="code-value">"comments"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"append"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;h2&gt;</span>Comments<span class="code-tag">&lt;/h2&gt;</span>
-    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"comment"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"comment"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
       <span class="code-tag">&lt;p&gt;</span>Existing comment that cannot be modified.<span class="code-tag">&lt;/p&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
     <span class="code-comment">&lt;!-- LLM can add new comments here --&gt;</span>
@@ -112,7 +112,7 @@
 <span class="code-tag">&lt;/article&gt;</span>
 
 <span class="code-comment">&lt;!-- Advertisement: Hidden from LLM --&gt;</span>
-<span class="code-tag">&lt;aside</span> <span class="code-attr">class</span>=<span class="code-value">"ad"</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;aside</span> <span class="code-attr">class</span>=<span class="code-value">"ad"</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;img</span> <span class="code-attr">src</span>=<span class="code-value">"ad.jpg"</span> <span class="code-attr">alt</span>=<span class="code-value">"Advertisement"</span><span class="code-tag">&gt;</span>
 <span class="code-tag">&lt;/aside&gt;</span></code></pre>
           </div>
@@ -133,20 +133,20 @@
 <pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">itemscope</span> <span class="code-attr">itemtype</span>=<span class="code-value">"https://schema.org/Product"</span><span class="code-tag">&gt;</span>
 
   <span class="code-comment">&lt;!-- Product name: Editable for personalization --&gt;</span>
-  <span class="code-tag">&lt;h1</span> <span class="code-attr">itemprop</span>=<span class="code-value">"name"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;h1</span> <span class="code-attr">itemprop</span>=<span class="code-value">"name"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
     Widget Pro Max
   <span class="code-tag">&lt;/h1&gt;</span>
 
   <span class="code-comment">&lt;!-- Price: NEVER editable --&gt;</span>
-  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"pricing"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"pricing"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;span</span> <span class="code-attr">itemprop</span>=<span class="code-value">"price"</span><span class="code-tag">&gt;</span>$99.99<span class="code-tag">&lt;/span&gt;</span>
     <span class="code-tag">&lt;meta</span> <span class="code-attr">itemprop</span>=<span class="code-value">"priceCurrency"</span> <span class="code-attr">content</span>=<span class="code-value">"USD"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
 
   <span class="code-comment">&lt;!-- Description: Summarizable and annotatable --&gt;</span>
   <span class="code-tag">&lt;div</span> <span class="code-attr">itemprop</span>=<span class="code-value">"description"</span>
-       <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span>
-       <span class="code-attr">llm-intent-category</span>=<span class="code-value">"definition"</span><span class="code-tag">&gt;</span>
+       <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation"</span>
+       <span class="code-attr">wam-intent-category</span>=<span class="code-value">"definition"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>
       The Widget Pro Max features our most advanced technology yet.
       With 50% more power and 30% longer battery life, it's perfect
@@ -155,25 +155,25 @@
   <span class="code-tag">&lt;/div&gt;</span>
 
   <span class="code-comment">&lt;!-- Specs: Structure visible, can highlight --&gt;</span>
-  <span class="code-tag">&lt;table</span> <span class="code-attr">class</span>=<span class="code-value">"specs"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;table</span> <span class="code-attr">class</span>=<span class="code-value">"specs"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;tr&gt;&lt;th&gt;</span>Dimensions<span class="code-tag">&lt;/th&gt;&lt;td&gt;</span>6" x 3" x 0.5"<span class="code-tag">&lt;/td&gt;&lt;/tr&gt;</span>
     <span class="code-tag">&lt;tr&gt;&lt;th&gt;</span>Weight<span class="code-tag">&lt;/th&gt;&lt;td&gt;</span>8 oz<span class="code-tag">&lt;/td&gt;&lt;/tr&gt;</span>
     <span class="code-tag">&lt;tr&gt;&lt;th&gt;</span>Battery<span class="code-tag">&lt;/th&gt;&lt;td&gt;</span>4000 mAh<span class="code-tag">&lt;/td&gt;&lt;/tr&gt;</span>
   <span class="code-tag">&lt;/table&gt;</span>
 
   <span class="code-comment">&lt;!-- Reviews: LLM can summarize/reorder --&gt;</span>
-  <span class="code-tag">&lt;section</span> <span class="code-attr">class</span>=<span class="code-value">"reviews"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"layout"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">class</span>=<span class="code-value">"reviews"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"layout"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;h2&gt;</span>Customer Reviews<span class="code-tag">&lt;/h2&gt;</span>
-    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"review"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"review"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
       <span class="code-tag">&lt;p&gt;</span>"Best purchase ever!" - 5 stars<span class="code-tag">&lt;/p&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
-    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"review"</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"review"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
       <span class="code-tag">&lt;p&gt;</span>"Good value for money" - 4 stars<span class="code-tag">&lt;/p&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
   <span class="code-tag">&lt;/section&gt;</span>
 
   <span class="code-comment">&lt;!-- Purchase form: Data can be auto-filled --&gt;</span>
-  <span class="code-tag">&lt;form</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"data"</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"session"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;form</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"data"</span> <span class="code-attr">wam-policy-memory</span>=<span class="code-value">"session"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;select</span> <span class="code-attr">name</span>=<span class="code-value">"color"</span><span class="code-tag">&gt;</span>
       <span class="code-tag">&lt;option&gt;</span>Black<span class="code-tag">&lt;/option&gt;</span>
       <span class="code-tag">&lt;option&gt;</span>Silver<span class="code-tag">&lt;/option&gt;</span>
@@ -185,7 +185,7 @@
 <span class="code-tag">&lt;/main&gt;</span>
 
 <span class="code-comment">&lt;!-- Internal data: Hidden from LLM --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span> <span class="code-attr">data-margin</span>=<span class="code-value">"45%"</span> <span class="code-attr">data-sku</span>=<span class="code-value">"WPM-2024"</span><span class="code-tag">&gt;&lt;/div&gt;</span></code></pre>
+<span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"none"</span> <span class="code-attr">data-margin</span>=<span class="code-value">"45%"</span> <span class="code-attr">data-sku</span>=<span class="code-value">"WPM-2024"</span><span class="code-tag">&gt;&lt;/div&gt;</span></code></pre>
           </div>
         </div>
       </section>
@@ -200,13 +200,13 @@
         <div class="example-container">
           <div class="example-header">api-docs.html</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;article</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"api-spec"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;article</span> <span class="code-attr">wam-intent-category</span>=<span class="code-value">"api-spec"</span><span class="code-tag">&gt;</span>
 
   <span class="code-tag">&lt;h1&gt;</span>API Reference: createUser()<span class="code-tag">&lt;/h1&gt;</span>
 
   <span class="code-comment">&lt;!-- Function signature: Read-only code --&gt;</span>
-  <span class="code-tag">&lt;pre</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"code-block"</span>
-       <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;&lt;code&gt;</span>
+  <span class="code-tag">&lt;pre</span> <span class="code-attr">wam-intent-category</span>=<span class="code-value">"code-block"</span>
+       <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;&lt;code&gt;</span>
 async function createUser(
   email: string,
   password: string,
@@ -215,7 +215,7 @@ async function createUser(
   <span class="code-tag">&lt;/code&gt;&lt;/pre&gt;</span>
 
   <span class="code-comment">&lt;!-- Description: Can be simplified/annotated --&gt;</span>
-  <span class="code-tag">&lt;section</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;h2&gt;</span>Description<span class="code-tag">&lt;/h2&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>
       Creates a new user account with the specified credentials.
@@ -225,19 +225,19 @@ async function createUser(
   <span class="code-tag">&lt;/section&gt;</span>
 
   <span class="code-comment">&lt;!-- Warning: Critical, highlighted --&gt;</span>
-  <span class="code-tag">&lt;aside</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"warning"</span>
-         <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"critical"</span>
-         <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;aside</span> <span class="code-attr">wam-intent-category</span>=<span class="code-value">"warning"</span>
+         <span class="code-attr">wam-intent-importance</span>=<span class="code-value">"critical"</span>
+         <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;strong&gt;</span>Security Warning:<span class="code-tag">&lt;/strong&gt;</span> Never store passwords
     in plain text. This function automatically hashes passwords
     before storage.
   <span class="code-tag">&lt;/aside&gt;</span>
 
   <span class="code-comment">&lt;!-- Example: Read-only code with explanation --&gt;</span>
-  <span class="code-tag">&lt;section</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"example"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;section</span> <span class="code-attr">wam-intent-category</span>=<span class="code-value">"example"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;h2&gt;</span>Example<span class="code-tag">&lt;/h2&gt;</span>
-    <span class="code-tag">&lt;pre</span> <span class="code-attr">llm-intent-category</span>=<span class="code-value">"code-block"</span>
-         <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;&lt;code&gt;</span>
+    <span class="code-tag">&lt;pre</span> <span class="code-attr">wam-intent-category</span>=<span class="code-value">"code-block"</span>
+         <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;&lt;code&gt;</span>
 const user = await createUser(
   'user@example.com',
   'SecurePass123!',
@@ -264,13 +264,13 @@ console.log(user.id);
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- Entire document: Strictly read-only, licensed --&gt;</span>
 <span class="code-tag">&lt;article</span>
-  <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span>
-  <span class="code-attr">llm-policy-license</span>=<span class="code-value">"all-rights-reserved"</span>
-  <span class="code-attr">llm-intent-category</span>=<span class="code-value">"legal-disclaimer"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span>
+  <span class="code-attr">wam-policy-license</span>=<span class="code-value">"all-rights-reserved"</span>
+  <span class="code-attr">wam-intent-category</span>=<span class="code-value">"legal-disclaimer"</span><span class="code-tag">&gt;</span>
 
   <span class="code-tag">&lt;h1&gt;</span>Terms of Service<span class="code-tag">&lt;/h1&gt;</span>
 
-  <span class="code-tag">&lt;p</span> <span class="code-attr">llm-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p</span> <span class="code-attr">wam-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
     PLEASE READ THESE TERMS CAREFULLY BEFORE USING OUR SERVICE.
   <span class="code-tag">&lt;/p&gt;</span>
 
@@ -311,9 +311,9 @@ console.log(user.id);
           <div class="example-header">smart-form.html</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;form</span>
-  <span class="code-attr">llm-policy-output</span>=<span class="code-value">"data interaction"</span>
-  <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"session"</span>
-  <span class="code-attr">llm-intent-function</span>=<span class="code-value">"submit-contact-form"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-policy-output</span>=<span class="code-value">"data interaction"</span>
+  <span class="code-attr">wam-policy-memory</span>=<span class="code-value">"session"</span>
+  <span class="code-attr">wam-intent-function</span>=<span class="code-value">"submit-contact-form"</span><span class="code-tag">&gt;</span>
 
   <span class="code-tag">&lt;h2&gt;</span>Contact Us<span class="code-tag">&lt;/h2&gt;</span>
 
@@ -333,18 +333,18 @@ console.log(user.id);
     Message
     <span class="code-tag">&lt;textarea</span>
       <span class="code-attr">name</span>=<span class="code-value">"message"</span>
-      <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span>
-      <span class="code-attr">llm-intent-instruction</span>=<span class="code-value">"Help the user compose a professional message"</span><span class="code-tag">&gt;</span>
+      <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content"</span>
+      <span class="code-attr">wam-intent-instruction</span>=<span class="code-value">"Help the user compose a professional message"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;/textarea&gt;</span>
   <span class="code-tag">&lt;/label&gt;</span>
 
   <span class="code-comment">&lt;!-- Sensitive fields: Hidden from LLM --&gt;</span>
-  <span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-value">"hidden"</span> <span class="code-attr">name</span>=<span class="code-value">"csrf_token"</span> <span class="code-attr">value</span>=<span class="code-value">"abc123"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
 
   <span class="code-tag">&lt;button</span> <span class="code-attr">type</span>=<span class="code-value">"submit"</span>
-          <span class="code-attr">llm-intent-function</span>=<span class="code-value">"submit"</span><span class="code-tag">&gt;</span>
+          <span class="code-attr">wam-intent-function</span>=<span class="code-value">"submit"</span><span class="code-tag">&gt;</span>
     Send Message
   <span class="code-tag">&lt;/button&gt;</span>
 <span class="code-tag">&lt;/form&gt;</span></code></pre>
@@ -363,10 +363,10 @@ console.log(user.id);
           <div class="example-header">Pattern</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;blockquote</span>
-  <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span>
-  <span class="code-attr">llm-intent-category</span>=<span class="code-value">"quote"</span>
-  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"[original URL]"</span>
-  <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"[Speaker Name]"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span>
+  <span class="code-attr">wam-intent-category</span>=<span class="code-value">"quote"</span>
+  <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"[original URL]"</span>
+  <span class="code-attr">wam-provenance-citation</span>=<span class="code-value">"[Speaker Name]"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>The exact words of the speaker, preserved verbatim.<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/blockquote&gt;</span></code></pre>
           </div>
@@ -384,7 +384,7 @@ console.log(user.id);
           <div class="example-header">Pattern</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- Structure visible, text redacted --&gt;</span>
-<span class="code-tag">&lt;section</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;section</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"structure"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;h2&gt;</span>Personal Information<span class="code-tag">&lt;/h2&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Name: John Smith<span class="code-tag">&lt;/p&gt;</span>       <span class="code-comment">&lt;!-- Shows as [REDACTED] --&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>SSN: 123-45-6789<span class="code-tag">&lt;/p&gt;</span>     <span class="code-comment">&lt;!-- Shows as [REDACTED] --&gt;</span>
@@ -392,7 +392,7 @@ console.log(user.id);
 <span class="code-tag">&lt;/section&gt;</span>
 
 <span class="code-comment">&lt;!-- Or completely hidden --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span> <span class="code-attr">class</span>=<span class="code-value">"pii"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"none"</span> <span class="code-attr">class</span>=<span class="code-value">"pii"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;!-- LLM doesn't even know this exists --&gt;</span>
 <span class="code-tag">&lt;/div&gt;</span></code></pre>
           </div>
@@ -409,7 +409,7 @@ console.log(user.id);
         <div class="example-container">
           <div class="example-header">Pattern</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;article</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation style"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;article</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation style"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>
     The LLM can wrap words in &lt;mark&gt;, &lt;a&gt;, &lt;abbr&gt;,
     or &lt;span&gt; tags, but cannot change the words themselves.
@@ -438,8 +438,8 @@ console.log(user.id);
           <div class="example-header">Pattern</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;div</span>
-  <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:generated-summary"</span>
-  <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.85"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-provenance-operation</span>=<span class="code-value">"content:generated-summary"</span>
+  <span class="code-attr">wam-provenance-confidence</span>=<span class="code-value">"0.85"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>
     This summary was automatically generated. The original
     article discussed three main points: innovation in AI,
@@ -449,9 +449,9 @@ console.log(user.id);
 
 <span class="code-comment">&lt;!-- Translation example --&gt;</span>
 <span class="code-tag">&lt;p</span>
-  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://example.com/original-es"</span>
-  <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:translated-from-spanish"</span>
-  <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.92"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://example.com/original-es"</span>
+  <span class="code-attr">wam-provenance-operation</span>=<span class="code-value">"content:translated-from-spanish"</span>
+  <span class="code-attr">wam-provenance-confidence</span>=<span class="code-value">"0.92"</span><span class="code-tag">&gt;</span>
   This text was translated from the original Spanish article.
 <span class="code-tag">&lt;/p&gt;</span></code></pre>
           </div>
@@ -470,8 +470,8 @@ console.log(user.id);
 <footer>
   <div class="container">
     <p>
-      LLM Markup Tutorial &mdash; Based on the
-      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+      Web Agent Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/web-agent-markup">Web Agent Markup Specification</a>
     </p>
   </div>
 </footer>

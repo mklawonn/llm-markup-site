@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>API Reference - LLM Markup Tutorial</title>
+  <title>API Reference - Web Agent Markup Tutorial</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
   <div class="container">
-    <h1>LLM Markup Tutorial</h1>
+    <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="policy.html">Policy</a>
@@ -33,9 +33,9 @@
         <a href="#shadow-root">ShadowRoot</a>
 
         <h3>Interfaces</h3>
-        <a href="#llm-policy">LLMPolicy</a>
-        <a href="#llm-intent">LLMIntent</a>
-        <a href="#llm-provenance">LLMProvenance</a>
+        <a href="#wam-policy">LLMPolicy</a>
+        <a href="#wam-intent">LLMIntent</a>
+        <a href="#wam-provenance">LLMProvenance</a>
         <a href="#llm-global-policy">LLMGlobalPolicy</a>
 
         <h3>Ledger</h3>
@@ -51,7 +51,7 @@
       <h1>API Reference</h1>
 
       <p>
-        LLM Markup extends the DOM with new properties and methods. This reference
+        Web Agent Markup extends the DOM with new properties and methods. This reference
         documents the JavaScript API available to web developers.
       </p>
 
@@ -62,27 +62,27 @@
           Every Element gains these read-only properties:
         </p>
 
-        <h3><code>element.llmPolicy</code></h3>
+        <h3><code>element.wamPolicy</code></h3>
 
-        <p>Returns the computed <a href="#llm-policy">LLMPolicy</a> for this element.</p>
+        <p>Returns the computed <a href="#wam-policy">LLMPolicy</a> for this element.</p>
 
-        <pre><code>const policy = document.querySelector('article').llmPolicy;
+        <pre><code>const policy = document.querySelector('article').wamPolicy;
 console.log(policy.effectiveOutputTokens);  // ['readonly']
 console.log(policy.isReadonly);              // true</code></pre>
 
-        <h3><code>element.llmIntent</code></h3>
+        <h3><code>element.wamIntent</code></h3>
 
-        <p>Returns the <a href="#llm-intent">LLMIntent</a> for this element.</p>
+        <p>Returns the <a href="#wam-intent">LLMIntent</a> for this element.</p>
 
-        <pre><code>const intent = document.querySelector('[llm-intent-category]').llmIntent;
+        <pre><code>const intent = document.querySelector('[wam-intent-category]').wamIntent;
 console.log(intent.category);     // 'summary'
 console.log(intent.importance);   // 'normal'</code></pre>
 
-        <h3><code>element.llmProvenance</code></h3>
+        <h3><code>element.wamProvenance</code></h3>
 
-        <p>Returns the <a href="#llm-provenance">LLMProvenance</a> for this element.</p>
+        <p>Returns the <a href="#wam-provenance">LLMProvenance</a> for this element.</p>
 
-        <pre><code>const prov = document.querySelector('blockquote').llmProvenance;
+        <pre><code>const prov = document.querySelector('blockquote').wamProvenance;
 console.log(prov.source);     // 'https://example.com/article'
 console.log(prov.citation);   // 'Smith et al., 2024'
 console.log(prov.confidence); // 0.95</code></pre>
@@ -123,28 +123,28 @@ console.log(repr);  // '<p>[REDACTED]</p>' (if structure-only)</code></pre>
 console.log(policy.defaults.output);  // ['readonly']
 console.log(policy.reportTo);         // 'https://api.example.com/reports'</code></pre>
 
-        <h3><code>document.llmPolicyResolved</code></h3>
+        <h3><code>document.wamPolicyResolved</code></h3>
 
         <p>
           Boolean indicating whether global policy resolution is complete.
           LLM interaction MUST NOT begin until this is <code>true</code>.
         </p>
 
-        <pre><code>if (document.llmPolicyResolved) {
+        <pre><code>if (document.wamPolicyResolved) {
   startLLMInteraction();
 } else {
   document.onllmpolicyresolved = () => startLLMInteraction();
 }</code></pre>
 
-        <h3><code>document.llmProvenanceLedger</code></h3>
+        <h3><code>document.wamProvenanceLedger</code></h3>
 
         <p>Returns the <a href="#ledger">LLMProvenanceLedger</a> for tracking modifications.</p>
 
-        <pre><code>const ledger = document.llmProvenanceLedger;
+        <pre><code>const ledger = document.wamProvenanceLedger;
 console.log('Total entries:', ledger.length);
 console.log('Has violations:', ledger.hasIntegrityViolations);</code></pre>
 
-        <h3><code>document.buildLLMContext(options?)</code></h3>
+        <h3><code>document.buildWAMContext(options?)</code></h3>
 
         <p>
           Builds the filtered context representation for the entire document.
@@ -152,10 +152,10 @@ console.log('Has violations:', ledger.hasIntegrityViolations);</code></pre>
         </p>
 
         <pre><code>// Basic usage
-const context = document.buildLLMContext();
+const context = document.buildWAMContext();
 
 // With options
-const context = document.buildLLMContext({
+const context = document.buildWAMContext({
   root: document.querySelector('main'),  // Custom root
   format: 'html',                         // 'html' | 'text' | 'markdown'
   includeBackground: false,               // Include importance='background'
@@ -164,7 +164,7 @@ const context = document.buildLLMContext({
 });
 
 // With metadata
-const result = document.buildLLMContext({ includeMetadata: true });
+const result = document.buildWAMContext({ includeMetadata: true });
 console.log(result.content);        // The HTML string
 console.log(result.elementCount);   // Number of elements included
 console.log(result.omittedCount);   // Number hidden by policy</code></pre>
@@ -182,7 +182,7 @@ violations.forEach(el => {
       <section id="shadow-root">
         <h2>ShadowRoot Extensions</h2>
 
-        <h3><code>shadowRoot.llmPolicyInherits</code></h3>
+        <h3><code>shadowRoot.wamPolicyInherits</code></h3>
 
         <p>Boolean indicating whether this shadow root inherits policies.</p>
 
@@ -190,7 +190,7 @@ violations.forEach(el => {
 
         <p>Array of namespace names being inherited: <code>['input', 'output', 'memory']</code></p>
 
-        <h3><code>shadowRoot.llmProvenanceTransparent</code></h3>
+        <h3><code>shadowRoot.wamProvenanceTransparent</code></h3>
 
         <p>Boolean indicating whether full provenance details are reported.</p>
 
@@ -208,7 +208,7 @@ const policy = shadow.getEffectivePolicy(inner);
 console.log(policy.effectiveOutputTokens);</code></pre>
       </section>
 
-      <section id="llm-policy">
+      <section id="wam-policy">
         <h2>LLMPolicy Interface</h2>
 
         <p>Represents the computed policy state for an element.</p>
@@ -299,7 +299,7 @@ policy.hasInputChannel('text')          // boolean
 policy.hasMemoryScope('session')        // boolean</code></pre>
       </section>
 
-      <section id="llm-intent">
+      <section id="wam-intent">
         <h2>LLMIntent Interface</h2>
 
         <table>
@@ -366,7 +366,7 @@ intent.isLexiconCategory()        // Is category in standardized lexicon?
 intent.getLexiconPrompt('summary') // Get optimized prompt for term</code></pre>
       </section>
 
-      <section id="llm-provenance">
+      <section id="wam-provenance">
         <h2>LLMProvenance Interface</h2>
 
         <table>
@@ -619,8 +619,8 @@ policy.resolveDependencies(elements)         // Returns elements to omit</code><
 <footer>
   <div class="container">
     <p>
-      LLM Markup Tutorial &mdash; Based on the
-      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+      Web Agent Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/web-agent-markup">Web Agent Markup Specification</a>
     </p>
   </div>
 </footer>

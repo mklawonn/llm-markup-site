@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLM-Provenance Namespace - LLM Markup Tutorial</title>
+  <title>WAM-Provenance Namespace - Web Agent Markup Tutorial</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
   <div class="container">
-    <h1>LLM Markup Tutorial</h1>
+    <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="policy.html">Policy</a>
@@ -49,7 +49,7 @@
 
     <main>
       <div class="namespace-header namespace-provenance">
-        <h2>LLM-Provenance Namespace</h2>
+        <h2>WAM-Provenance Namespace</h2>
         <p>Audit trail for content origin and AI modifications. Enables accountability and trust.</p>
       </div>
 
@@ -57,7 +57,7 @@
         <h2>Overview</h2>
 
         <p>
-          The <strong>llm-provenance</strong> namespace provides transparency and accountability
+          The <strong>wam-provenance</strong> namespace provides transparency and accountability
           for AI-modified content. It answers three critical questions:
         </p>
 
@@ -86,22 +86,22 @@
           </thead>
           <tbody>
             <tr>
-              <td><code>llm-provenance-source</code></td>
+              <td><code>wam-provenance-source</code></td>
               <td>Canonical origin URI</td>
               <td><code>https://example.com/article</code></td>
             </tr>
             <tr>
-              <td><code>llm-provenance-citation</code></td>
+              <td><code>wam-provenance-citation</code></td>
               <td>Human-readable attribution</td>
               <td><code>Smith et al., Nature 2024</code></td>
             </tr>
             <tr>
-              <td><code>llm-provenance-confidence</code></td>
+              <td><code>wam-provenance-confidence</code></td>
               <td>Certainty score (0-1)</td>
               <td><code>0.95</code></td>
             </tr>
             <tr>
-              <td><code>llm-provenance-operation</code></td>
+              <td><code>wam-provenance-operation</code></td>
               <td>Modification history</td>
               <td><code>content:summarized style:highlighted</code></td>
             </tr>
@@ -121,7 +121,7 @@
         <h2>Source Attribution</h2>
 
         <p>
-          The <code>llm-provenance-source</code> attribute specifies the canonical URI where
+          The <code>wam-provenance-source</code> attribute specifies the canonical URI where
           the content originated. This enables verification and cross-referencing.
         </p>
 
@@ -130,17 +130,17 @@
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- Link to original article --&gt;</span>
 <span class="code-tag">&lt;blockquote</span>
-  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://nature.com/articles/s41586-024-07930"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://nature.com/articles/s41586-024-07930"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>The study found significant improvements in...<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/blockquote&gt;</span>
 
 <span class="code-comment">&lt;!-- Link to Wikipedia for factual claims --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://en.wikipedia.org/wiki/Machine_learning"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://en.wikipedia.org/wiki/Machine_learning"</span><span class="code-tag">&gt;</span>
   Machine learning is a subset of artificial intelligence.
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-comment">&lt;!-- DOI for academic references --&gt;</span>
-<span class="code-tag">&lt;cite</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://doi.org/10.1000/example"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;cite</span> <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://doi.org/10.1000/example"</span><span class="code-tag">&gt;</span>
   Smith, J. (2024). "AI Safety Mechanisms"
 <span class="code-tag">&lt;/cite&gt;</span></code></pre>
           </div>
@@ -159,7 +159,7 @@
         <h2>Citation</h2>
 
         <p>
-          The <code>llm-provenance-citation</code> attribute provides a human-readable
+          The <code>wam-provenance-citation</code> attribute provides a human-readable
           attribution string that can be displayed to users.
         </p>
 
@@ -167,12 +167,12 @@
           <div class="example-header">Example: Citations</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;blockquote</span>
-  <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://example.com/paper.pdf"</span>
-  <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"Chen et al., ICML 2024"</span><span class="code-tag">&gt;</span>
+  <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://example.com/paper.pdf"</span>
+  <span class="code-attr">wam-provenance-citation</span>=<span class="code-value">"Chen et al., ICML 2024"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Our results demonstrate a 40% improvement...<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/blockquote&gt;</span>
 
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-citation</span>=<span class="code-value">"World Health Organization, 2024"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-citation</span>=<span class="code-value">"World Health Organization, 2024"</span><span class="code-tag">&gt;</span>
   Current guidelines recommend...
 <span class="code-tag">&lt;/p&gt;</span></code></pre>
           </div>
@@ -181,8 +181,8 @@
         <div class="callout callout-info">
           <div class="callout-title">License Attribution</div>
           <p>
-            When content has <code>llm-policy-license</code> with <code>requiresAttribution: true</code>,
-            the <code>llm-provenance-citation</code> becomes mandatory. The User Agent validates
+            When content has <code>wam-policy-license</code> with <code>requiresAttribution: true</code>,
+            the <code>wam-provenance-citation</code> becomes mandatory. The User Agent validates
             that proper attribution is present.
           </p>
         </div>
@@ -192,7 +192,7 @@
         <h2>Confidence</h2>
 
         <p>
-          The <code>llm-provenance-confidence</code> attribute indicates how certain the LLM
+          The <code>wam-provenance-confidence</code> attribute indicates how certain the LLM
           is about the accuracy of generated or modified content. Values range from 0.0 (no
           confidence) to 1.0 (complete certainty).
         </p>
@@ -201,22 +201,22 @@
           <div class="example-header">Example: Confidence Levels</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- High confidence: Well-established fact --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.99"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-confidence</span>=<span class="code-value">"0.99"</span><span class="code-tag">&gt;</span>
   The Earth orbits the Sun.
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-comment">&lt;!-- Moderate confidence: Recent data --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.75"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-confidence</span>=<span class="code-value">"0.75"</span><span class="code-tag">&gt;</span>
   Current market trends suggest growth in Q4.
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-comment">&lt;!-- Low confidence: Speculation --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.35"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-confidence</span>=<span class="code-value">"0.35"</span><span class="code-tag">&gt;</span>
   This interpretation of the poem suggests themes of isolation.
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-comment">&lt;!-- Very low confidence: Uncertain --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-confidence</span>=<span class="code-value">"0.15"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-confidence</span>=<span class="code-value">"0.15"</span><span class="code-tag">&gt;</span>
   The exact date of this event is unclear.
 <span class="code-tag">&lt;/p&gt;</span></code></pre>
           </div>
@@ -266,14 +266,14 @@
         <h2>Operations</h2>
 
         <p>
-          The <code>llm-provenance-operation</code> attribute records what modifications the
+          The <code>wam-provenance-operation</code> attribute records what modifications the
           LLM made to content. Each operation is logged with a <strong>layer</strong> and an
           <strong>explanation</strong>.
         </p>
 
         <h3>Operation Syntax</h3>
 
-        <pre><code>llm-provenance-operation="layer:explanation [layer:explanation ...]"</code></pre>
+        <pre><code>wam-provenance-operation="layer:explanation [layer:explanation ...]"</code></pre>
 
         <h3>Operation Layers</h3>
 
@@ -323,17 +323,17 @@
           <div class="example-header">Example: Operation Logging</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- Single operation --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:summarized-from-500-words"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-operation</span>=<span class="code-value">"content:summarized-from-500-words"</span><span class="code-tag">&gt;</span>
   This is a concise summary of the key points.
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-comment">&lt;!-- Multiple operations --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:translated-from-spanish style:added-emphasis"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-operation</span>=<span class="code-value">"content:translated-from-spanish style:added-emphasis"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;mark&gt;</span>Important:<span class="code-tag">&lt;/mark&gt;</span> This text was translated and highlighted.
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-comment">&lt;!-- Structural change --&gt;</span>
-<span class="code-tag">&lt;ul</span> <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"topology:reordered-by-priority"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;ul</span> <span class="code-attr">wam-provenance-operation</span>=<span class="code-value">"topology:reordered-by-priority"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;li&gt;</span>Critical task (was #3)<span class="code-tag">&lt;/li&gt;</span>
   <span class="code-tag">&lt;li&gt;</span>Important task (was #1)<span class="code-tag">&lt;/li&gt;</span>
   <span class="code-tag">&lt;li&gt;</span>Nice to have (was #2)<span class="code-tag">&lt;/li&gt;</span>
@@ -356,14 +356,14 @@
         <p>
           Provenance attributes are local to the node they describe. If an LLM-generated
           summary is embedded within another document, it retains its own
-          <code>llm-provenance-*</code> attributes independently of the surrounding document's
+          <code>wam-provenance-*</code> attributes independently of the surrounding document's
           provenance.
         </p>
 
         <h3>The Source Chain</h3>
 
         <p>
-          The <code>llm-provenance-source</code> attribute links to the <em>immediate upstream
+          The <code>wam-provenance-source</code> attribute links to the <em>immediate upstream
           authority</em>. In a multi-hop scenario, each hop links to its own upstream source,
           creating a traversable chain.
         </p>
@@ -372,19 +372,19 @@
           <div class="example-header">Example: Multi-hop Source Chain</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- Original article (Original Site) --&gt;</span>
-<span class="code-tag">&lt;article</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://original-site.com/article"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;article</span> <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://original-site.com/article"</span><span class="code-tag">&gt;</span>
   Full article text...
 <span class="code-tag">&lt;/article&gt;</span>
 
 <span class="code-comment">&lt;!-- Gemini-generated fragment points to Original Site --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://original-site.com/article"</span>
-   <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:summarized"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://original-site.com/article"</span>
+   <span class="code-attr">wam-provenance-operation</span>=<span class="code-value">"content:summarized"</span><span class="code-tag">&gt;</span>
   Gemini summary of original article...
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-comment">&lt;!-- Browser-level summary points to Gemini's URI --&gt;</span>
-<span class="code-tag">&lt;p</span> <span class="code-attr">llm-provenance-source</span>=<span class="code-value">"https://gemini-source.example/fragment"</span>
-   <span class="code-attr">llm-provenance-operation</span>=<span class="code-value">"content:summarized content:translated-to-french"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;p</span> <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://gemini-source.example/fragment"</span>
+   <span class="code-attr">wam-provenance-operation</span>=<span class="code-value">"content:summarized content:translated-to-french"</span><span class="code-tag">&gt;</span>
   Browser summary of Gemini summary, translated...
 <span class="code-tag">&lt;/p&gt;</span></code></pre>
           </div>
@@ -393,7 +393,7 @@
         <h3>Cumulative Operations</h3>
 
         <p>
-          The <code>llm-provenance-operation</code> attribute is a space-separated list.
+          The <code>wam-provenance-operation</code> attribute is a space-separated list.
           As content moves through multiple LLM "hops," each agent <strong>appends</strong>
           its operation to the existing list rather than replacing it, creating a persistent
           audit trail of the full transformation history.
@@ -506,7 +506,7 @@
           <div class="card">
             <h4>3. Tamper Protection</h4>
             <p>
-              If a page script attempts to modify or delete <code>llm-provenance</code>
+              If a page script attempts to modify or delete <code>wam-provenance</code>
               attributes to hide AI involvement, the User Agent detects the mismatch against
               its internal ledger and <strong>restores the correct attributes</strong>,
               keeping the audit trail immutable for the session.
@@ -549,7 +549,7 @@
           <li>Observe all DOM mutations via MutationObserver</li>
           <li>For each mutation, check if it has a corresponding ledger entry</li>
           <li>Verify the layer in the entry matches the type of change</li>
-          <li>Confirm the <code>llm-provenance-operation</code> attribute is present</li>
+          <li>Confirm the <code>wam-provenance-operation</code> attribute is present</li>
           <li>If any check fails, flag as integrity violation</li>
         </ol>
 
@@ -709,7 +709,7 @@
       </section>
 
       <div class="page-nav">
-        <a href="intent.html">&larr; Previous: LLM-Intent Namespace</a>
+        <a href="intent.html">&larr; Previous: WAM-Intent Namespace</a>
         <a href="advanced.html">Next: Advanced Topics &rarr;</a>
       </div>
     </main>
@@ -720,8 +720,8 @@
 <footer>
   <div class="container">
     <p>
-      LLM Markup Tutorial &mdash; Based on the
-      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+      Web Agent Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/web-agent-markup">Web Agent Markup Specification</a>
     </p>
   </div>
 </footer>

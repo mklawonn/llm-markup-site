@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LLM-Policy Namespace - LLM Markup Tutorial</title>
+  <title>WAM-Policy Namespace - Web Agent Markup Tutorial</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
   <div class="container">
-    <h1>LLM Markup Tutorial</h1>
+    <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="policy.html" style="color: white;">Policy</a>
@@ -54,7 +54,7 @@
 
     <main>
       <div class="namespace-header namespace-policy">
-        <h2>LLM-Policy Namespace</h2>
+        <h2>WAM-Policy Namespace</h2>
         <p>Hard constraints enforced by the User Agent. Controls what the LLM sees, changes, and remembers.</p>
       </div>
 
@@ -62,7 +62,7 @@
         <h2>Overview</h2>
 
         <p>
-          The <strong>llm-policy</strong> namespace provides three attributes that control the
+          The <strong>wam-policy</strong> namespace provides three attributes that control the
           fundamental interaction between web content and AI assistants:
         </p>
 
@@ -76,17 +76,17 @@
           </thead>
           <tbody>
             <tr>
-              <td><code>llm-policy-input</code></td>
+              <td><code>wam-policy-input</code></td>
               <td>Visibility</td>
               <td>"What can the LLM see?"</td>
             </tr>
             <tr>
-              <td><code>llm-policy-output</code></td>
+              <td><code>wam-policy-output</code></td>
               <td>Mutation</td>
               <td>"What can the LLM change?"</td>
             </tr>
             <tr>
-              <td><code>llm-policy-memory</code></td>
+              <td><code>wam-policy-memory</code></td>
               <td>Retention</td>
               <td>"What can the LLM remember?"</td>
             </tr>
@@ -109,7 +109,7 @@
         <h2>Input (Visibility Control)</h2>
 
         <p>
-          The <code>llm-policy-input</code> attribute controls what information from an element
+          The <code>wam-policy-input</code> attribute controls what information from an element
           is included in the LLM's context. It uses additive tokens that can be combined.
         </p>
 
@@ -122,7 +122,7 @@
         <div class="example-container">
           <div class="example-header">Example: Hiding Sensitive Content</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Admin password: hunter2<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;button</span> <span class="code-attr">onclick</span>=<span class="code-value">"deleteEverything()"</span><span class="code-tag">&gt;</span>Delete<span class="code-tag">&lt;/button&gt;</span>
 <span class="code-tag">&lt;/div&gt;</span></code></pre>
@@ -151,7 +151,7 @@
         <div class="example-container">
           <div class="example-header">Example: Redacting Text While Preserving Structure</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"structure"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;h2&gt;</span>User Profile<span class="code-tag">&lt;/h2&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Name: John Smith<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Email: john@example.com<span class="code-tag">&lt;/p&gt;</span>
@@ -191,11 +191,11 @@
           <div class="example-header">Example: Media Visibility Control</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- With media token: LLM sees the image source --&gt;</span>
-<span class="code-tag">&lt;img</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure media"</span>
+<span class="code-tag">&lt;img</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"structure media"</span>
      <span class="code-attr">src</span>=<span class="code-value">"photo.jpg"</span> <span class="code-attr">alt</span>=<span class="code-value">"Team photo"</span><span class="code-tag">&gt;</span>
 
 <span class="code-comment">&lt;!-- Without media token: LLM sees placeholder --&gt;</span>
-<span class="code-tag">&lt;img</span> <span class="code-attr">llm-policy-input</span>=<span class="code-value">"structure"</span>
+<span class="code-tag">&lt;img</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"structure"</span>
      <span class="code-attr">src</span>=<span class="code-value">"private.jpg"</span> <span class="code-attr">alt</span>=<span class="code-value">"Private photo"</span><span class="code-tag">&gt;</span></code></pre>
           </div>
           <div class="example-result">
@@ -208,7 +208,7 @@
         <h3 id="input-all">Token: <code>all</code></h3>
         <p>
           Shorthand for <code>structure text attributes media</code>. Full visibility.
-          This is the default when no <code>llm-policy-input</code> is specified.
+          This is the default when no <code>wam-policy-input</code> is specified.
         </p>
 
         <h3>Combining Input Tokens</h3>
@@ -255,7 +255,7 @@
         <h2>Output (Mutation Control)</h2>
 
         <p>
-          The <code>llm-policy-output</code> attribute controls what modifications the LLM
+          The <code>wam-policy-output</code> attribute controls what modifications the LLM
           is permitted to make. By default, all content is <code>readonly</code>.
         </p>
 
@@ -268,7 +268,7 @@
         <div class="example-container">
           <div class="example-header">Example: Protected Legal Content</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;footer</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;footer</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>&amp;copy; 2024 Example Corp. All rights reserved.<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>This content is protected by copyright law.<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/footer&gt;</span></code></pre>
@@ -285,7 +285,7 @@
         <div class="example-container">
           <div class="example-header">Example: Theme-able Content</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p</span> <span class="code-attr">class</span>=<span class="code-value">"neutral"</span><span class="code-tag">&gt;</span>
     The LLM can change this to class="highlighted" or
     add inline styles, but cannot change these words.
@@ -304,7 +304,7 @@
         <div class="example-container">
           <div class="example-header">Example: Annotatable Article</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;p</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;p</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation"</span><span class="code-tag">&gt;</span>
   Machine learning is a subset of artificial intelligence.
 <span class="code-tag">&lt;/p&gt;</span>
 
@@ -383,7 +383,7 @@
         <h2>Memory (Retention Control)</h2>
 
         <p>
-          The <code>llm-policy-memory</code> attribute controls whether and how long the
+          The <code>wam-policy-memory</code> attribute controls whether and how long the
           LLM can retain information from this content.
         </p>
 
@@ -423,22 +423,22 @@
           <div class="example-header">Example: Memory Scopes</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- One-time processing, no memory --&gt;</span>
-<span class="code-tag">&lt;form</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;form</span> <span class="code-attr">wam-policy-memory</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;input</span> <span class="code-attr">type</span>=<span class="code-value">"password"</span><span class="code-tag">&gt;</span>
 <span class="code-tag">&lt;/form&gt;</span>
 
 <span class="code-comment">&lt;!-- Remember preferences for this session --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"session"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-memory</span>=<span class="code-value">"session"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>User prefers dark mode.<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/div&gt;</span>
 
 <span class="code-comment">&lt;!-- Long-term personalization --&gt;</span>
-<span class="code-tag">&lt;section</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"user"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;section</span> <span class="code-attr">wam-policy-memory</span>=<span class="code-value">"user"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>User interests: cooking, hiking, photography<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/section&gt;</span>
 
 <span class="code-comment">&lt;!-- Explicit training consent --&gt;</span>
-<span class="code-tag">&lt;article</span> <span class="code-attr">llm-policy-memory</span>=<span class="code-value">"training"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;article</span> <span class="code-attr">wam-policy-memory</span>=<span class="code-value">"training"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>This content may be used for model improvement.<span class="code-tag">&lt;/p&gt;</span>
 <span class="code-tag">&lt;/article&gt;</span></code></pre>
           </div>
@@ -448,7 +448,7 @@
           <div class="callout-title">Private Browsing</div>
           <p>
             In Private/Incognito mode, the User Agent MUST treat all content as
-            <code>llm-policy-memory="none"</code> regardless of the declared value.
+            <code>wam-policy-memory="none"</code> regardless of the declared value.
           </p>
         </div>
       </section>
@@ -457,7 +457,7 @@
         <h2>License Enforcement</h2>
 
         <p>
-          The <code>llm-policy-license</code> attribute specifies the content license using
+          The <code>wam-policy-license</code> attribute specifies the content license using
           an SPDX identifier. The User Agent enforces license restrictions automatically.
         </p>
 
@@ -465,13 +465,13 @@
           <div class="example-header">Example: License-Based Restrictions</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- CC-BY-ND: No derivatives allowed --&gt;</span>
-<span class="code-tag">&lt;blockquote</span> <span class="code-attr">llm-policy-license</span>=<span class="code-value">"CC-BY-ND-4.0"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;blockquote</span> <span class="code-attr">wam-policy-license</span>=<span class="code-value">"CC-BY-ND-4.0"</span><span class="code-tag">&gt;</span>
   This quoted content cannot be modified, only read.
-  Even if you add llm-policy-output="mutable", it won't work.
+  Even if you add wam-policy-output="mutable", it won't work.
 <span class="code-tag">&lt;/blockquote&gt;</span>
 
 <span class="code-comment">&lt;!-- CC0: Public domain, no restrictions --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-license</span>=<span class="code-value">"CC0-1.0"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-license</span>=<span class="code-value">"CC0-1.0"</span><span class="code-tag">&gt;</span>
   This content can be freely modified.
 <span class="code-tag">&lt;/div&gt;</span></code></pre>
           </div>
@@ -479,7 +479,7 @@
 
         <p>
           <strong>Key principle:</strong> License restrictions cannot be overridden by explicit
-          policy attributes. If a license says "no derivatives," then <code>llm-policy-output="mutable"</code>
+          policy attributes. If a license says "no derivatives," then <code>wam-policy-output="mutable"</code>
           will be intersected down to <code>readonly</code>.
         </p>
 
@@ -497,13 +497,13 @@
         <div class="example-container">
           <div class="example-header">Example: Inheritance and Override</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
   <span class="code-comment">&lt;!-- Inherits readonly --&gt;</span>
   <span class="code-tag">&lt;section&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>This is readonly.<span class="code-tag">&lt;/p&gt;</span>
 
     <span class="code-comment">&lt;!-- Local override --&gt;</span>
-    <span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
       <span class="code-tag">&lt;p&gt;</span>This can be edited.<span class="code-tag">&lt;/p&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
   <span class="code-tag">&lt;/section&gt;</span>
@@ -523,7 +523,7 @@
 
       <div class="page-nav">
         <a href="index.html">&larr; Previous: Introduction</a>
-        <a href="intent.html">Next: LLM-Intent Namespace &rarr;</a>
+        <a href="intent.html">Next: WAM-Intent Namespace &rarr;</a>
       </div>
     </main>
 
@@ -533,8 +533,8 @@
 <footer>
   <div class="container">
     <p>
-      LLM Markup Tutorial &mdash; Based on the
-      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+      Web Agent Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/web-agent-markup">Web Agent Markup Specification</a>
     </p>
   </div>
 </footer>

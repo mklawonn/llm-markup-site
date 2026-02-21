@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Topics - LLM Markup Tutorial</title>
+  <title>Advanced Topics - Web Agent Markup Tutorial</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header>
   <div class="container">
-    <h1>LLM Markup Tutorial</h1>
+    <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="policy.html">Policy</a>
@@ -53,7 +53,7 @@
       <h1>Advanced Topics</h1>
 
       <p>
-        This section covers advanced features of LLM Markup including document-level
+        This section covers advanced features of Web Agent Markup including document-level
         policies, web component integration, and license enforcement.
       </p>
 
@@ -61,7 +61,7 @@
         <h2>Global Policy</h2>
 
         <p>
-          In addition to element-level attributes, LLM Markup supports document-wide
+          In addition to element-level attributes, Web Agent Markup supports document-wide
           policies delivered via HTTP headers or meta tags. Global policies define
           defaults and constraints that apply to the entire document.
         </p>
@@ -70,11 +70,11 @@
 
         <h4>HTTP Header (Highest Priority)</h4>
 
-        <pre><code>LLM-Policy: {
+        <pre><code>WAM-Policy: {
   "defaults": {
-    "llm-policy-input": ["structure", "text"],
-    "llm-policy-output": ["readonly"],
-    "llm-policy-memory": ["none"]
+    "wam-policy-input": ["structure", "text"],
+    "wam-policy-output": ["readonly"],
+    "wam-policy-memory": ["none"]
   },
   "constraints": {
     "block-selectors": [".secret", "[data-pii]"]
@@ -88,9 +88,9 @@
           <div class="example-header">Meta Tag Delivery</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;head&gt;</span>
-  <span class="code-tag">&lt;meta</span> <span class="code-attr">name</span>=<span class="code-value">"llm-policy"</span> <span class="code-attr">content</span>=<span class="code-value">'{
+  <span class="code-tag">&lt;meta</span> <span class="code-attr">name</span>=<span class="code-value">"wam-policy"</span> <span class="code-attr">content</span>=<span class="code-value">'{
     "defaults": {
-      "llm-policy-output": ["readonly"]
+      "wam-policy-output": ["readonly"]
     }
   }'</span><span class="code-tag">&gt;</span>
 <span class="code-tag">&lt;/head&gt;</span></code></pre>
@@ -99,7 +99,7 @@
 
         <h4>External File</h4>
 
-        <pre><code>LLM-Policy-Src: https://example.com/.llm-policy.json</code></pre>
+        <pre><code>WAM-Policy-Src: https://example.com/.wam-policy.json</code></pre>
 
         <h3 id="precedence">Precedence Rules</h3>
 
@@ -121,7 +121,7 @@
 "block-selectors": [".pii"]
 
 <span class="code-comment">// Local attribute is ignored &mdash; intersection wins</span>
-&lt;div class="pii" llm-policy-input="all"&gt;
+&lt;div class="pii" wam-policy-input="all"&gt;
   Still hidden.
 &lt;/div&gt;</code></pre>
           </div>
@@ -133,10 +133,10 @@
               by a local element attribute.
             </p>
             <pre><code><span class="code-comment">// Global default: readonly</span>
-"defaults": { "llm-policy-output": ["readonly"] }
+"defaults": { "wam-policy-output": ["readonly"] }
 
 <span class="code-comment">// Local attribute overrides the default</span>
-&lt;div llm-policy-output="mutable"&gt;
+&lt;div wam-policy-output="mutable"&gt;
   This IS editable.
 &lt;/div&gt;</code></pre>
           </div>
@@ -177,7 +177,7 @@
 
         <p>
           CSS selectors for elements that should be forcibly hidden from LLM context,
-          regardless of their local <code>llm-policy-input</code> value.
+          regardless of their local <code>wam-policy-input</code> value.
         </p>
 
         <pre><code>"constraints": {
@@ -192,19 +192,19 @@
         <h4>Category Rules</h4>
 
         <p>
-          Apply policy constraints based on <code>llm-intent-category</code> values:
+          Apply policy constraints based on <code>wam-intent-category</code> values:
         </p>
 
         <pre><code>"constraints": {
   "category-rules": {
     "advertisement": {
-      "llm-policy-input": ["none"]
+      "wam-policy-input": ["none"]
     },
     "user-content": {
-      "llm-policy-output": ["readonly", "annotation"]
+      "wam-policy-output": ["readonly", "annotation"]
     },
     "legal-disclaimer": {
-      "llm-policy-output": ["readonly"]
+      "wam-policy-output": ["readonly"]
     }
   }
 }</code></pre>
@@ -252,7 +252,7 @@
           <div class="example-header">Isolated Shadow Root</div>
           <div class="example-code">
 <pre><code><span class="code-comment">&lt;!-- Page sets mutable policy --&gt;</span>
-<span class="code-tag">&lt;div</span> <span class="code-attr">llm-policy-output</span>=<span class="code-value">"mutable"</span><span class="code-tag">&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"mutable"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;my-component&gt;</span><span class="code-tag">&lt;/my-component&gt;</span>
 <span class="code-tag">&lt;/div&gt;</span>
 
@@ -263,7 +263,7 @@ class MyComponent extends HTMLElement {
     super();
     const shadow = this.attachShadow({
       mode: 'open',
-      llmPolicyInherit: false  <span class="code-comment">// Default - isolated</span>
+      wamPolicyInherit: false  <span class="code-comment">// Default - isolated</span>
     });
     shadow.innerHTML = `
       &lt;!-- Uses spec defaults (readonly), NOT page's mutable --&gt;
@@ -286,13 +286,13 @@ class MyComponent extends HTMLElement {
           <div class="example-code">
 <pre><code>this.attachShadow({
   mode: 'open',
-  llmPolicyInherit: true  <span class="code-comment">// Inherit all namespaces</span>
+  wamPolicyInherit: true  <span class="code-comment">// Inherit all namespaces</span>
 });
 
 <span class="code-comment">// Or selective inheritance:</span>
 this.attachShadow({
   mode: 'open',
-  llmPolicyInherit: ['input', 'output']  <span class="code-comment">// Only these namespaces</span>
+  wamPolicyInherit: ['input', 'output']  <span class="code-comment">// Only these namespaces</span>
 });</code></pre>
           </div>
         </div>
@@ -348,7 +348,7 @@ this.attachShadow({
 
         <pre><code>this.attachShadow({
   mode: 'open',
-  llmProvenanceTransparent: true  <span class="code-comment">// Full details to document ledger</span>
+  wamProvenanceTransparent: true  <span class="code-comment">// Full details to document ledger</span>
 });
 
 <span class="code-comment">// Default: false - only aggregated mutation counts</span></code></pre>
@@ -358,7 +358,7 @@ this.attachShadow({
         <h2>License Enforcement</h2>
 
         <p>
-          The <code>llm-policy-license</code> attribute enforces content licenses automatically.
+          The <code>wam-policy-license</code> attribute enforces content licenses automatically.
           License restrictions <strong>cannot be overridden</strong> by explicit policy attributes.
         </p>
 
@@ -452,7 +452,7 @@ this.attachShadow({
           <div class="callout-title">No Derivatives (ND)</div>
           <p>
             <strong>ND licenses strictly limit output to <code>readonly</code> and <code>annotation</code></strong>.
-            Even with <code>llm-policy-output="mutable"</code>, the license wins. The LLM
+            Even with <code>wam-policy-output="mutable"</code>, the license wins. The LLM
             cannot modify ND-licensed content beyond non-destructive annotation.
           </p>
         </div>
@@ -518,22 +518,22 @@ this.attachShadow({
 
         <h4>AND (Conjunction)</h4>
 
-        <pre><code>llm-policy-license="MIT AND CC-BY-4.0"
+        <pre><code>wam-policy-license="MIT AND CC-BY-4.0"
 <span class="code-comment">// Effective: intersection of both licenses</span></code></pre>
 
         <h4>OR (Disjunction)</h4>
 
-        <pre><code>llm-policy-license="GPL-3.0 OR MIT"
+        <pre><code>wam-policy-license="GPL-3.0 OR MIT"
 <span class="code-comment">// User Agent may choose less restrictive option</span></code></pre>
 
         <h4>WITH (Exception)</h4>
 
-        <pre><code>llm-policy-license="GPL-2.0 WITH Classpath-exception-2.0"
+        <pre><code>wam-policy-license="GPL-2.0 WITH Classpath-exception-2.0"
 <span class="code-comment">// Exception modifies base license</span></code></pre>
 
         <h4>Parentheses</h4>
 
-        <pre><code>llm-policy-license="(MIT OR Apache-2.0) AND CC-BY-4.0"</code></pre>
+        <pre><code>wam-policy-license="(MIT OR Apache-2.0) AND CC-BY-4.0"</code></pre>
       </section>
 
       <section id="context-representation">
@@ -602,7 +602,7 @@ this.attachShadow({
       </section>
 
       <div class="page-nav">
-        <a href="provenance.html">&larr; Previous: LLM-Provenance Namespace</a>
+        <a href="provenance.html">&larr; Previous: WAM-Provenance Namespace</a>
         <a href="api.html">Next: API Reference &rarr;</a>
       </div>
     </main>
@@ -613,8 +613,8 @@ this.attachShadow({
 <footer>
   <div class="container">
     <p>
-      LLM Markup Tutorial &mdash; Based on the
-      <a href="https://github.com/example/llm-markup">LLM Markup Specification</a>
+      Web Agent Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/web-agent-markup">Web Agent Markup Specification</a>
     </p>
   </div>
 </footer>

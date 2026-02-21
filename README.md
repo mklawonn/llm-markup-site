@@ -1,6 +1,6 @@
-# LLM Markup Site
+# Web Agent Markup Site
 
-This is a static site tutorial for LLM markup.
+This is a static site tutorial for Web Agent Markup.
 
 ## How to Serve
 
