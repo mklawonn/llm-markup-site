@@ -50,7 +50,7 @@
     <main>
       <div class="namespace-header namespace-provenance">
         <h2>WAM-Provenance Namespace</h2>
-        <p>Audit trail for content origin and AI modifications. Enables accountability and trust.</p>
+        <p>Record Phase: audit trail for content origin and AI modifications. Written atomically by the UA after every mutation tool call, before the DOM is updated.</p>
       </div>
 
       <section id="overview">
@@ -178,12 +178,14 @@
           </div>
         </div>
 
-        <div class="callout callout-info">
-          <div class="callout-title">License Attribution</div>
+        <div class="callout callout-danger">
+          <div class="callout-title">License Attribution: Hard Block</div>
           <p>
             When content has <code>wam-policy-license</code> with <code>requiresAttribution: true</code>,
-            the <code>wam-provenance-citation</code> becomes mandatory. The User Agent validates
-            that proper attribution is present.
+            the <code>wam-provenance-citation</code> attribute is mandatory for any mutation. If no
+            citation is available, the User Agent <strong>MUST block the mutation</strong> and return
+            a structured error rather than recording an uncited mutation on attributed content.
+            Unlike most policy constraints, this is not a warning &mdash; the operation does not proceed.
           </p>
         </div>
       </section>
@@ -423,6 +425,7 @@
           <li><strong>Tamper-evident:</strong> Unauthorized changes are detected</li>
           <li><strong>Read-only to scripts:</strong> Pages can inspect but not modify</li>
           <li><strong>User-inspectable:</strong> The UA provides UI to view the ledger</li>
+          <li><strong>MCP-accessible:</strong> The <code>wam_inspect_provenance</code> context tool (always available) returns the full ledger for any element, providing the orchestrating LLM with the same data visible in the user-facing inspection view</li>
         </ul>
 
         <h3>Ledger Entry Structure</h3>
@@ -472,9 +475,19 @@
               <td>Value after modification</td>
             </tr>
             <tr>
-              <td><code>agentId</code></td>
+              <td><code>orchestratingModelId</code></td>
+              <td>String</td>
+              <td>Identifier of the LLM that issued the mutation tool call</td>
+            </tr>
+            <tr>
+              <td><code>generatingModelId</code></td>
               <td>String?</td>
-              <td>Optional LLM agent identifier</td>
+              <td>Identifier of the LLM whose output became the new value; only populated when <code>scopedCall</code> is <code>true</code> and the generating model differs from the orchestrating model</td>
+            </tr>
+            <tr>
+              <td><code>scopedCall</code></td>
+              <td>Boolean</td>
+              <td>Whether this mutation resulted from a Scoped LLM Call (internal LLM invocation by a mutation tool). When <code>true</code>, both model IDs MUST be populated.</td>
             </tr>
           </tbody>
         </table>
@@ -680,7 +693,11 @@
 
         <h3><code>llmprovenancechange</code></h3>
 
-        <p>Fired when a new entry is added to the Provenance Ledger.</p>
+        <p>
+          Fired at the end of the Record phase execution sequence &mdash; after the Provenance
+          Ledger entry has been written and the <code>wam-provenance-operation</code> attribute
+          has been updated, but before the mutation is applied to the live DOM.
+        </p>
 
         <pre><code>document.addEventListener('llmprovenancechange', (event) => {
   console.log('Modified:', event.target);
@@ -690,7 +707,17 @@
 
         <h3><code>llmintegrityviolation</code></h3>
 
-        <p>Fired when an integrity violation is detected.</p>
+        <p>
+          Fired when an integrity violation is detected. This event has two sources:
+        </p>
+        <ul>
+          <li><strong>UA-driven detection:</strong> The User Agent observes a DOM mutation
+              without a corresponding ledger entry or provenance attribute.</li>
+          <li><strong>LLM-driven reporting:</strong> The orchestrating LLM calls the
+              <code>wam_report_violation</code> MCP context tool to signal an unexpected
+              condition it observed. The UA treats this as equivalent to a self-detected
+              violation and fires the event with the same semantics.</li>
+        </ul>
 
         <pre><code>document.addEventListener('llmintegrityviolation', (event) => {
   console.error('Violation on:', event.target);
@@ -703,7 +730,8 @@
           <p>
             Pages can listen to these events for logging or analytics, but they
             <strong>cannot</strong> prevent or suppress integrity violation detection.
-            The User Agent always performs validation regardless of page scripts.
+            The LLM cannot suppress the event by not calling <code>wam_report_violation</code>;
+            UA-driven detection always runs independently.
           </p>
         </div>
       </section>

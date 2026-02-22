@@ -361,9 +361,20 @@ policy.hasMemoryScope('session')        // boolean</code></pre>
 
         <h3>Methods</h3>
 
-        <pre><code>intent.generatePrompt()           // Returns system prompt fragment
+        <pre><code>intent.getScopedCallConfig()      // Returns the resolved Scoped Call Configuration Object (Group A fields)
 intent.isLexiconCategory()        // Is category in standardized lexicon?
-intent.getLexiconPrompt('summary') // Get optimized prompt for term</code></pre>
+intent.getLexiconPrompt('summary') // Get optimized system prompt fragment for a lexicon term
+intent.hasInvokeSignal()          // Does this element have a Group B attribute (wam_invoke gating)?</code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Primary LLM Interaction: MCP Tools</div>
+          <p>
+            The primary interface for LLM-to-WAM interaction is the MCP tool protocol
+            (<code>wam_build_context</code>, mutation tools, etc.), not the DOM API. The DOM
+            API is provided for page scripts and DevTools integrations that need to inspect
+            WAM state programmatically.
+          </p>
+        </div>
       </section>
 
       <section id="wam-provenance">
@@ -496,9 +507,19 @@ ledger.getShadowRootsWithMutations()        // Shadow roots with changes</code><
               <td>Has corresponding operation attribute</td>
             </tr>
             <tr>
-              <td><code>agentId</code></td>
+              <td><code>orchestratingModelId</code></td>
+              <td>string</td>
+              <td>Identifier of the LLM that issued the mutation tool call</td>
+            </tr>
+            <tr>
+              <td><code>generatingModelId</code></td>
               <td>string?</td>
-              <td>Optional LLM agent identifier</td>
+              <td>Identifier of the LLM whose output became the new value; populated only when <code>scopedCall</code> is <code>true</code></td>
+            </tr>
+            <tr>
+              <td><code>scopedCall</code></td>
+              <td>boolean</td>
+              <td>Whether this mutation resulted from a Scoped LLM Call (internal LLM invocation by a mutation tool)</td>
             </tr>
           </tbody>
         </table>

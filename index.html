@@ -32,6 +32,7 @@
         <a href="#the-problem">The Problem</a>
         <a href="#the-solution">The Solution</a>
         <a href="#key-concepts">Key Concepts</a>
+        <a href="#key-concepts">Tool Lifecycle Model</a>
 
         <h3>Namespaces</h3>
         <a href="policy.html">WAM-Policy</a>
@@ -211,40 +212,98 @@
       <section id="key-concepts">
         <h2>Key Concepts</h2>
 
+        <h3>Tool Lifecycle Model</h3>
+
+        <p>
+          WAM is built around a <strong>Tool Lifecycle Model</strong>: every MCP mutation tool
+          call passes through three phases enforced by the User Agent before a DOM change occurs.
+        </p>
+
+        <div class="diagram">
+          <table style="text-align: center;">
+            <tr>
+              <td style="background: #fecaca; padding: 16px; width: 33%;">
+                <strong>Gate</strong><br>
+                <code>wam-policy-*</code><br>
+                <small>
+                  Which tools are offered?<br>
+                  What operations are permitted?<br>
+                  What content is visible?
+                </small>
+              </td>
+              <td style="font-size: 1.5rem; padding: 12px;">&rarr;</td>
+              <td style="background: #fef3c7; padding: 16px; width: 33%;">
+                <strong>Configure</strong><br>
+                <code>wam-intent-*</code><br>
+                <small>
+                  How should tools behave?<br>
+                  What is the Scoped Call Configuration?<br>
+                  Is <code>wam_invoke</code> available?
+                </small>
+              </td>
+              <td style="font-size: 1.5rem; padding: 12px;">&rarr;</td>
+              <td style="background: #d1fae5; padding: 16px; width: 33%;">
+                <strong>Record</strong><br>
+                <code>wam-provenance-*</code><br>
+                <small>
+                  Write the ledger entry.<br>
+                  Update the operation attribute.<br>
+                  Then apply the DOM change.
+                </small>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Discovery-First Protocol</div>
+          <p>
+            Before mutation or interaction tools appear in <code>tools/list</code>, the LLM
+            MUST call <code>wam_build_context</code>. This context tool returns the
+            policy-filtered HTML fragment, composed system prompt, and the
+            <strong>Mutable Element Manifest</strong> &mdash; an enumeration of every element
+            for which at least one mutation tool is currently available, ordered by importance.
+            Only after this discovery call does the UA expose mutation and interaction tools.
+          </p>
+        </div>
+
         <h3>The Three Namespaces</h3>
 
         <p>
-          Web Agent Markup is organized into three orthogonal namespaces, each addressing a different concern:
+          Web Agent Markup is organized into three orthogonal namespaces, each governing one
+          phase of the Tool Lifecycle:
         </p>
 
         <div class="grid-3">
           <div class="card">
             <h4><span class="token token-output">wam-policy-*</span></h4>
-            <p><strong>Hard Constraints</strong></p>
+            <p><strong>Gate Phase</strong></p>
             <p>
-              Mechanistically enforced by the User Agent. Controls visibility, mutations, and
-              data retention. The LLM cannot violate these.
+              Mechanistically enforced by the User Agent. Each output token exposes a specific
+              MCP mutation tool and constrains what operations it may perform. Input tokens
+              filter what content tools can read. The LLM cannot bypass these constraints.
             </p>
             <a href="policy.html" class="btn btn-secondary">Learn More &rarr;</a>
           </div>
 
           <div class="card">
             <h4><span class="token token-intent">wam-intent-*</span></h4>
-            <p><strong>Prompt Construction</strong></p>
+            <p><strong>Configure Phase</strong></p>
             <p>
-              The UA deterministically translates semantic markers into the framing and
-              instructions the LLM sees. Shapes context and direction without filtering
-              or blocking content.
+              The UA resolves semantic markers into the Scoped Call Configuration Object
+              (Group A) and into <code>wam_invoke</code> availability signals (Group B).
+              Shapes how tools behave without filtering or blocking anything.
             </p>
             <a href="intent.html" class="btn btn-secondary">Learn More &rarr;</a>
           </div>
 
           <div class="card">
             <h4><span class="token token-provenance">wam-provenance-*</span></h4>
-            <p><strong>Audit Trail</strong></p>
+            <p><strong>Record Phase</strong></p>
             <p>
-              Tracks content sources and modifications. Enables accountability by recording
-              what the LLM changed and why.
+              Written atomically by the UA after every mutation tool call, before the DOM
+              change is applied. Tracks content sources, operation history, and model
+              identifiers. Enables accountability and user inspection.
             </p>
             <a href="provenance.html" class="btn btn-secondary">Learn More &rarr;</a>
           </div>

@@ -173,6 +173,17 @@
 
         <h3 id="constraints">Constraints</h3>
 
+        <div class="callout callout-info">
+          <div class="callout-title">Constraints Narrow the Tool List</div>
+          <p>
+            Global constraints that restrict the effective output token set directly reduce
+            the MCP mutation tools offered to the LLM. A global constraint that caps all
+            elements at <code>annotation</code> means only <code>wam_annotate</code> and
+            <code>wam_apply_style</code> appear in <code>tools/list</code>, regardless of
+            what individual element attributes declare.
+          </p>
+        </div>
+
         <h4>Block Selectors</h4>
 
         <p>
@@ -453,7 +464,11 @@ this.attachShadow({
           <p>
             <strong>ND licenses strictly limit output to <code>readonly</code> and <code>annotation</code></strong>.
             Even with <code>wam-policy-output="mutable"</code>, the license wins. The LLM
-            cannot modify ND-licensed content beyond non-destructive annotation.
+            cannot modify ND-licensed content beyond non-destructive annotation. Because
+            output tokens map directly to MCP mutation tools, this also narrows the tool
+            list: only <code>wam_annotate</code> and <code>wam_apply_style</code> will
+            be offered for ND-licensed elements. All other mutation tools are withheld
+            regardless of the declared policy attribute.
           </p>
         </div>
 

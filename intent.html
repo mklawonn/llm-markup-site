@@ -33,7 +33,7 @@
         <a href="#importance">Importance</a>
         <a href="#entity">Entity</a>
         <a href="#instruction">Instruction</a>
-        <a href="#prompt-construction">Prompt Construction</a>
+        <a href="#configure-phase">Configure Phase</a>
 
         <h3>Category Lexicon</h3>
         <a href="#lexicon-structure">Information Structure</a>
@@ -41,38 +41,90 @@
         <a href="#lexicon-technical">Technical</a>
         <a href="#lexicon-narrative">Narrative</a>
 
-        <h3>Advanced</h3>
-        <a href="#tone-output">Tone & Output</a>
-        <a href="#function-workflow">Function & Workflow</a>
+        <h3>Group A &mdash; Scoped Call Config</h3>
+        <a href="#tone-output">Tone &amp; Output</a>
+
+        <h3>Group B &mdash; Tool Signals</h3>
+        <a href="#function-workflow">Function &amp; Workflow</a>
       </nav>
     </aside>
 
     <main>
       <div class="namespace-header namespace-intent">
         <h2>WAM-Intent Namespace</h2>
-        <p>Deterministic prompt construction. The UA translates semantic markers into the framing and instructions the LLM sees.</p>
+        <p>Configure Phase: deterministic MCP tool configuration. The UA resolves semantic markers into tool parameters and availability signals before LLM interaction begins.</p>
       </div>
 
       <section id="overview">
         <h2>Overview</h2>
 
         <p>
-          The <strong>wam-intent</strong> namespace governs the <strong>deterministic construction
-          of prompts</strong>. The User Agent translates these semantic markers into the framing
-          and instructions seen by the LLM. Unlike policy attributes &mdash; which enforce hard
-          boundaries by <strong>redacting content</strong> and <strong>blocking mutations</strong>
-          &mdash; intent attributes work by shaping <em>how the LLM receives and understands</em>
-          the content, controlling its context and direction without filtering or blocking anything.
+          The <strong>wam-intent</strong> namespace governs the <strong>Configure phase</strong>
+          of the Tool Lifecycle Model. Where Policy attributes (Gate phase) control <em>which</em>
+          MCP mutation tools are exposed and what operations they may perform, Intent attributes
+          configure <em>how</em> those tools behave when invoked &mdash; without filtering content
+          or blocking mutations.
         </p>
+
+        <p>
+          Intent attributes serve two distinct roles, organized into two groups:
+        </p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h4>Group A &mdash; Scoped Call Configuration</h4>
+            <p>
+              <code>category</code>, <code>instruction</code>, <code>tone</code>,
+              <code>output</code>
+            </p>
+            <p>
+              These attributes compose the <strong>Scoped Call Configuration Object</strong>,
+              which is embedded in the element's entry in the Mutable Element Manifest. When a
+              mutation tool makes an internal LLM call (a "scoped call") on behalf of this
+              element, this object provides the framing: how to classify the content, what
+              directive to follow, what tone to adopt, and what format to produce.
+            </p>
+          </div>
+          <div class="card">
+            <h4>Group B &mdash; Tool Availability Signals</h4>
+            <p>
+              <code>function</code>, <code>workflow</code>
+            </p>
+            <p>
+              These attributes gate exposure of the <strong><code>wam_invoke</code></strong>
+              interaction tool. Either attribute &mdash; combined with <code>interaction</code>
+              in the Effective Permission Set &mdash; causes <code>wam_invoke</code> to appear in
+              the MCP <code>tools/list</code> for that element.
+            </p>
+          </div>
+        </div>
+
+        <p>
+          Two additional attributes influence how the element appears in the Mutable Element
+          Manifest, but belong to neither group:
+        </p>
+        <ul>
+          <li>
+            <strong><code>wam-intent-importance</code></strong> &mdash; Controls the
+            <em>ordering</em> of elements in the Mutable Element Manifest. Higher importance
+            elements appear earlier; lower importance elements appear later and are dropped
+            first when token-budget limits require truncation.
+          </li>
+          <li>
+            <strong><code>wam-intent-entity</code></strong> &mdash; Enriches the manifest entry
+            with a canonical entity URI, helping the orchestrating LLM and scoped calls resolve
+            ambiguous named references without guessing.
+          </li>
+        </ul>
 
         <div class="callout callout-info">
           <div class="callout-title">Mechanistic, Not "Soft"</div>
           <p>
             Intent processing is <strong>deterministic</strong>: the User Agent parses intent
-            attributes and produces a predictable system prompt fragment. The LLM receives this
-            framing as authoritative instructions. The distinction from Policy is not "hard vs
-            soft" but <em>how</em> the UA acts: Policy filters and blocks; Intent frames and
-            instructs.
+            attributes and produces a predictable Scoped Call Configuration Object (Group A)
+            or determines <code>wam_invoke</code> availability (Group B). There are no
+            probabilistic elements. The distinction from Policy is not "hard vs soft" but
+            <em>where</em> the UA acts: Policy gates and blocks; Intent configures and signals.
           </p>
         </div>
 
@@ -80,30 +132,59 @@
           <thead>
             <tr>
               <th>Attribute</th>
-              <th>Purpose</th>
+              <th>Group</th>
+              <th>Role</th>
               <th>Example</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>wam-intent-category</code></td>
-              <td>Semantic classification</td>
+              <td>A</td>
+              <td>Scoped Call Configuration</td>
               <td><code>"summary"</code>, <code>"legal-disclaimer"</code></td>
             </tr>
             <tr>
+              <td><code>wam-intent-instruction</code></td>
+              <td>A</td>
+              <td>Scoped Call Configuration</td>
+              <td>Free-form directive text</td>
+            </tr>
+            <tr>
+              <td><code>wam-intent-tone</code></td>
+              <td>A</td>
+              <td>Scoped Call Configuration</td>
+              <td><code>"formal"</code>, <code>"casual"</code></td>
+            </tr>
+            <tr>
+              <td><code>wam-intent-output</code></td>
+              <td>A</td>
+              <td>Scoped Call Configuration</td>
+              <td><code>"bullet-points"</code></td>
+            </tr>
+            <tr>
+              <td><code>wam-intent-function</code></td>
+              <td>B</td>
+              <td>Tool Availability Signal</td>
+              <td><code>"submit-form"</code></td>
+            </tr>
+            <tr>
+              <td><code>wam-intent-workflow</code></td>
+              <td>B</td>
+              <td>Tool Availability Signal</td>
+              <td><code>"checkout-step-2"</code></td>
+            </tr>
+            <tr>
               <td><code>wam-intent-importance</code></td>
-              <td>Priority level</td>
+              <td>&mdash;</td>
+              <td>Manifest Ordering</td>
               <td><code>"critical"</code>, <code>"background"</code></td>
             </tr>
             <tr>
               <td><code>wam-intent-entity</code></td>
-              <td>Canonical reference</td>
+              <td>&mdash;</td>
+              <td>Manifest Enrichment</td>
               <td>Wikidata URI</td>
-            </tr>
-            <tr>
-              <td><code>wam-intent-instruction</code></td>
-              <td>Custom handling</td>
-              <td>Free-form text</td>
             </tr>
           </tbody>
         </table>
@@ -114,8 +195,11 @@
 
         <p>
           The <code>wam-intent-category</code> attribute classifies content using a
-          <strong>Standardized Lexicon</strong>. Each category maps to an optimized prompt
-          that tells the LLM how to handle that type of content.
+          <strong>Standardized Lexicon</strong>. The value flows into the <code>category</code>
+          field of the Scoped Call Configuration Object. When a mutation tool makes an internal
+          LLM call for this element, the category is used to select an optimized system prompt
+          from the Standardized Lexicon &mdash; helping the scoped LLM handle the content
+          appropriately.
         </p>
 
         <div class="example-container">
@@ -145,33 +229,33 @@
           <thead>
             <tr>
               <th>Category</th>
-              <th>Generated Prompt</th>
+              <th>Semantic Meaning</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>summary</code></td>
-              <td>"This is a summary. Treat it as a condensed version of longer content."</td>
+              <td>Condensed version of longer content; do not treat as comprehensive</td>
             </tr>
             <tr>
               <td><code>definition</code></td>
-              <td>"This is a definition. Treat it as an authoritative explanation of a term."</td>
+              <td>Authoritative explanation of a term; preserve precision</td>
             </tr>
             <tr>
               <td><code>example</code></td>
-              <td>"This is an example. Use it to illustrate or clarify related concepts."</td>
+              <td>Illustrative instance; use to clarify related concepts</td>
             </tr>
             <tr>
               <td><code>introduction</code></td>
-              <td>"This is an introduction. Use it to establish context for the content that follows."</td>
+              <td>Establishes context for content that follows</td>
             </tr>
             <tr>
               <td><code>conclusion</code></td>
-              <td>"This is a conclusion. Treat it as a synthesis of the preceding content."</td>
+              <td>Synthesis of preceding content</td>
             </tr>
             <tr>
               <td><code>outline</code></td>
-              <td>"This is an outline. Treat it as a structural overview."</td>
+              <td>Structural overview; treat as navigational skeleton</td>
             </tr>
           </tbody>
         </table>
@@ -182,29 +266,29 @@
           <thead>
             <tr>
               <th>Category</th>
-              <th>Generated Prompt</th>
+              <th>Semantic Meaning</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>claim</code></td>
-              <td>"This is a claim. Evaluate it critically and note it may be contested."</td>
+              <td>Asserted proposition that may be contested; evaluate critically</td>
             </tr>
             <tr>
               <td><code>evidence</code></td>
-              <td>"This is evidence. Use it to support or refute claims."</td>
+              <td>Supporting or refuting data for a claim</td>
             </tr>
             <tr>
               <td><code>counter-argument</code></td>
-              <td>"This is a counter-argument. Consider it as opposition to a prior claim."</td>
+              <td>Opposition to a prior claim</td>
             </tr>
             <tr>
               <td><code>opinion</code></td>
-              <td>"This is an opinion. Distinguish it from factual statements."</td>
+              <td>Subjective view; distinguish from factual statements</td>
             </tr>
             <tr>
               <td><code>satire</code></td>
-              <td>"This is satire. Do not interpret it literally."</td>
+              <td>Ironic or humorous commentary; do not interpret literally</td>
             </tr>
           </tbody>
         </table>
@@ -215,25 +299,25 @@
           <thead>
             <tr>
               <th>Category</th>
-              <th>Generated Prompt</th>
+              <th>Semantic Meaning</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>code-block</code></td>
-              <td>"This is source code. Preserve formatting and syntax."</td>
+              <td>Source code; preserve formatting and syntax exactly</td>
             </tr>
             <tr>
               <td><code>api-spec</code></td>
-              <td>"This is an API specification. Treat it as authoritative technical reference."</td>
+              <td>Authoritative technical reference; do not paraphrase</td>
             </tr>
             <tr>
               <td><code>warning</code></td>
-              <td>"This is a warning. Highlight its importance to the user."</td>
+              <td>Safety or risk notice; highlight importance</td>
             </tr>
             <tr>
               <td><code>legal-disclaimer</code></td>
-              <td>"This is a legal disclaimer. Do not paraphrase or summarize."</td>
+              <td>Legal text; do not paraphrase or summarize</td>
             </tr>
           </tbody>
         </table>
@@ -244,25 +328,25 @@
           <thead>
             <tr>
               <th>Category</th>
-              <th>Generated Prompt</th>
+              <th>Semantic Meaning</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>fiction</code></td>
-              <td>"This is fiction. Do not treat it as factual."</td>
+              <td>Invented content; do not treat as factual</td>
             </tr>
             <tr>
               <td><code>transcript</code></td>
-              <td>"This is a transcript. Preserve speaker attributions."</td>
+              <td>Verbatim record; preserve speaker attributions</td>
             </tr>
             <tr>
               <td><code>instruction</code></td>
-              <td>"This is an instruction. Present it as actionable guidance."</td>
+              <td>Actionable directive; present as steps to follow</td>
             </tr>
             <tr>
               <td><code>quote</code></td>
-              <td>"This is a quote. Preserve it exactly and attribute it properly."</td>
+              <td>Attribution-required quotation; preserve exactly</td>
             </tr>
           </tbody>
         </table>
@@ -270,11 +354,10 @@
         <h3>Custom Categories</h3>
 
         <p>
-          If you use a category not in the standardized lexicon, the User Agent applies a
-          <strong>fallback template</strong>:
+          If you use a category not in the Standardized Lexicon, the UA passes the value
+          unchanged into the Scoped Call Configuration Object. The scoped LLM receives the
+          raw string and a generic fallback framing.
         </p>
-
-        <pre><code>"Treat the following content as a(n) [your-category]."</code></pre>
 
         <div class="example-container">
           <div class="example-header">Example: Custom Category</div>
@@ -284,7 +367,7 @@
   ...
 <span class="code-tag">&lt;/section&gt;</span>
 
-<span class="code-comment">&lt;!-- Generates: "Treat the following content as a(n) recipe." --&gt;</span></code></pre>
+<span class="code-comment">&lt;!-- Scoped Call Config: { category: "recipe", ... } --&gt;</span></code></pre>
           </div>
         </div>
       </section>
@@ -293,44 +376,46 @@
         <h2>Importance</h2>
 
         <p>
-          The <code>wam-intent-importance</code> attribute guides the LLM's attention when
-          context is limited. Higher importance content is prioritized; lower importance
-          content may be truncated or ignored.
+          The <code>wam-intent-importance</code> attribute controls the <strong>ordering of
+          elements in the Mutable Element Manifest</strong> returned by
+          <code>wam_build_context</code>. Higher importance elements appear earlier in the list.
+          When token-budget limits require truncation, elements are dropped from the tail of
+          this ordering &mdash; so <code>background</code> elements are sacrificed first.
         </p>
 
         <table>
           <thead>
             <tr>
               <th>Level</th>
-              <th>Behavior</th>
-              <th>Generated Prompt</th>
+              <th>Manifest Position</th>
+              <th>Semantic</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><span class="token" style="background: #fecaca;">critical</span></td>
-              <td>MUST be preserved</td>
-              <td>"Pay maximum attention to the following content. It is essential for the user's task."</td>
+              <td>First</td>
+              <td>Must be addressed; cannot be dropped by truncation</td>
             </tr>
             <tr>
               <td><span class="token" style="background: #fed7aa;">high</span></td>
-              <td>Prioritized</td>
-              <td>"Prioritize this content."</td>
+              <td>Early</td>
+              <td>Prioritized over normal elements</td>
             </tr>
             <tr>
               <td><span class="token" style="background: #e5e7eb;">normal</span></td>
-              <td>Standard (default)</td>
-              <td><em>(no additional prompt)</em></td>
+              <td>Default order</td>
+              <td>Standard priority (default)</td>
             </tr>
             <tr>
               <td><span class="token" style="background: #d1fae5;">low</span></td>
-              <td>Supplementary</td>
-              <td>"This content is supplementary. You may ignore it if context is limited."</td>
+              <td>Late</td>
+              <td>Supplementary; address after critical/high/normal</td>
             </tr>
             <tr>
               <td><span class="token" style="background: #dbeafe;">background</span></td>
-              <td>Background only</td>
-              <td>"This is background information only. Do not focus on it unless explicitly asked."</td>
+              <td>Last</td>
+              <td>Context only; first to be dropped if manifest is truncated</td>
             </tr>
           </tbody>
         </table>
@@ -339,15 +424,15 @@
           <div class="example-header">Example: Mixed Importance Levels</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;article&gt;</span>
-  <span class="code-comment">&lt;!-- Critical: Always include --&gt;</span>
+  <span class="code-comment">&lt;!-- Critical: appears first in wam_build_context manifest --&gt;</span>
   <span class="code-tag">&lt;div</span> <span class="code-attr">wam-intent-importance</span>=<span class="code-value">"critical"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;p&gt;</span><span class="code-tag">&lt;strong&gt;</span>WARNING:<span class="code-tag">&lt;/strong&gt;</span> Server maintenance at midnight.<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
 
-  <span class="code-comment">&lt;!-- Normal: Standard priority --&gt;</span>
+  <span class="code-comment">&lt;!-- Normal: standard position in manifest --&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>Regular article content goes here...<span class="code-tag">&lt;/p&gt;</span>
 
-  <span class="code-comment">&lt;!-- Background: Ignore unless asked --&gt;</span>
+  <span class="code-comment">&lt;!-- Background: last in manifest, dropped first on truncation --&gt;</span>
   <span class="code-tag">&lt;aside</span> <span class="code-attr">wam-intent-importance</span>=<span class="code-value">"background"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>Historical note: This feature was added in v2.3...<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;/aside&gt;</span>
@@ -356,11 +441,12 @@
         </div>
 
         <div class="callout callout-info">
-          <div class="callout-title">Token Limits</div>
+          <div class="callout-title">Ordering, Not Filtering</div>
           <p>
-            When the LLM context window is limited, the User Agent uses importance levels
-            to decide what to include. <code>critical</code> content is always included;
-            <code>background</code> content is dropped first.
+            Importance affects the <em>order</em> elements appear in the manifest, not whether
+            they are included. All mutable elements appear in the manifest regardless of
+            importance level; <code>background</code> elements simply appear last and are
+            the first candidates for removal when token budgets require it.
           </p>
         </div>
       </section>
@@ -370,14 +456,16 @@
 
         <p>
           The <code>wam-intent-entity</code> attribute links text to a canonical entity URI
-          (like Wikidata). This helps the LLM disambiguate terms and connect to knowledge bases.
+          (such as a Wikidata entry). The URI is included in the element's entry in the Mutable
+          Element Manifest, helping the orchestrating LLM and any scoped calls resolve ambiguous
+          named entities without relying on the LLM's parametric knowledge alone.
         </p>
 
         <div class="example-container">
           <div class="example-header">Example: Entity Disambiguation</div>
           <div class="example-code">
 <pre><code><span class="code-tag">&lt;p&gt;</span>
-  <span class="code-comment">&lt;!-- Link to Wikidata entity for "Apple Inc." --&gt;</span>
+  <span class="code-comment">&lt;!-- Manifest entry: intent.entity = "https://www.wikidata.org/wiki/Q312" --&gt;</span>
   <span class="code-tag">&lt;span</span> <span class="code-attr">wam-intent-entity</span>=<span class="code-value">"https://www.wikidata.org/wiki/Q312"</span><span class="code-tag">&gt;</span>
     Apple
   <span class="code-tag">&lt;/span&gt;</span>
@@ -385,7 +473,7 @@
 <span class="code-tag">&lt;/p&gt;</span>
 
 <span class="code-tag">&lt;p&gt;</span>
-  <span class="code-comment">&lt;!-- Link to Wikidata entity for the fruit "Apple" --&gt;</span>
+  <span class="code-comment">&lt;!-- Different entity: the fruit --&gt;</span>
   I ate an
   <span class="code-tag">&lt;span</span> <span class="code-attr">wam-intent-entity</span>=<span class="code-value">"https://www.wikidata.org/wiki/Q89"</span><span class="code-tag">&gt;</span>
     apple
@@ -399,10 +487,10 @@
           <strong>Benefits:</strong>
         </p>
         <ul>
-          <li>Disambiguates homonyms (Apple Inc. vs. the fruit)</li>
-          <li>Connects to structured knowledge bases</li>
-          <li>Enables precise entity-based queries</li>
-          <li>Improves accuracy for named entity tasks</li>
+          <li>Disambiguates homonyms (Apple Inc. vs. the fruit) without relying on LLM guesses</li>
+          <li>Provides a stable, structured reference independent of text phrasing</li>
+          <li>Enables precise entity-based queries and cross-document linking</li>
+          <li>Improves accuracy for any mutation or scoped call that touches this element</li>
         </ul>
       </section>
 
@@ -410,14 +498,18 @@
         <h2>Instruction</h2>
 
         <p>
-          The <code>wam-intent-instruction</code> attribute provides a custom, free-form
-          instruction that overrides all other intent processing for that element.
+          The <code>wam-intent-instruction</code> attribute is a <strong>Group A</strong> field
+          that provides a free-form directive included directly in the Scoped Call Configuration
+          Object. When a mutation tool makes an internal LLM call, the <code>instruction</code>
+          field has the highest precedence &mdash; the scoped LLM uses it verbatim as the
+          primary system prompt fragment, overriding what the <code>category</code> lexicon
+          would otherwise supply.
         </p>
 
         <div class="example-container">
           <div class="example-header">Example: Custom Instructions</div>
           <div class="example-code">
-<pre><code><span class="code-comment">&lt;!-- Override default behavior with custom instruction --&gt;</span>
+<pre><code><span class="code-comment">&lt;!-- Scoped calls receive: { instruction: "Translate all technical jargon into plain English", ... } --&gt;</span>
 <span class="code-tag">&lt;div</span> <span class="code-attr">wam-intent-instruction</span>=<span class="code-value">"Translate all technical jargon into plain English"</span><span class="code-tag">&gt;</span>
   <span class="code-tag">&lt;p&gt;</span>
     The API utilizes RESTful architecture with OAuth 2.0
@@ -433,111 +525,195 @@
         </div>
 
         <div class="callout callout-warning">
-          <div class="callout-title">Precedence</div>
+          <div class="callout-title">Precedence Within Group A</div>
           <p>
-            When <code>wam-intent-instruction</code> is present, it takes precedence over
-            <code>wam-intent-category</code> and other intent attributes. The category's
-            semantic value is still available for policy routing, but the custom instruction
-            is used for prompt construction.
+            When <code>wam-intent-instruction</code> is present, the UA uses it as the primary
+            system prompt fragment for any scoped LLM call. Other Group A fields
+            (<code>category</code>, <code>tone</code>, <code>output_format</code>) are still
+            resolved and appended after it &mdash; <code>instruction</code> does not suppress
+            them, it just takes precedence over the lexicon category prompt.
           </p>
         </div>
       </section>
 
-      <section id="prompt-construction">
-        <h2>Prompt Construction</h2>
+      <section id="configure-phase">
+        <h2>Configure Phase</h2>
 
         <p>
-          The User Agent constructs the LLM prompt using a hierarchy of sources:
+          The Configure phase is the second step in the WAM Tool Lifecycle Model, between the
+          Gate phase (policy enforcement) and the Record phase (provenance). The UA resolves
+          intent attributes into two outputs:
         </p>
 
-        <div class="diagram">
-          <table>
-            <tr>
-              <td style="background: #fecaca; text-align: center; padding: 12px;">
-                <strong>1. Custom Instruction</strong><br>
-                <code>wam-intent-instruction</code><br>
-                <small>Highest priority &mdash; used directly if present</small>
-              </td>
-            </tr>
-            <tr>
-              <td style="background: #fed7aa; text-align: center; padding: 12px;">
-                <strong>2. Standardized Lexicon</strong><br>
-                <code>wam-intent-category</code> (if in lexicon)<br>
-                <small>Optimized prompts for known categories</small>
-              </td>
-            </tr>
-            <tr>
-              <td style="background: #fef3c7; text-align: center; padding: 12px;">
-                <strong>3. Fallback Template</strong><br>
-                <code>wam-intent-category</code> (if custom)<br>
-                <small>"Treat the following content as a(n) [value]."</small>
-              </td>
-            </tr>
-          </table>
-        </div>
+        <h3>Group A: Scoped Call Configuration Object</h3>
 
-        <h3>Combined Prompt Example</h3>
+        <p>
+          Group A attributes (<code>category</code>, <code>instruction</code>, <code>tone</code>,
+          <code>output</code>) compose the Scoped Call Configuration Object. This object is
+          embedded in the element's entry in the Mutable Element Manifest and passed to any
+          mutation tool that accepts an <code>instruction</code> parameter instead of a
+          <code>value</code> parameter.
+        </p>
+
+        <p>
+          A mutation tool receiving an <code>instruction</code> parameter performs a
+          <strong>scoped LLM call</strong>: it fetches the element's content (filtered by
+          input policy), assembles a scoped system prompt from the Configure phase object,
+          calls an internal LLM, and uses the response as the mutation value.
+        </p>
 
         <div class="example-container">
-          <div class="example-header">HTML with Intent Attributes</div>
+          <div class="example-header">Scoped Call Configuration Object (JSON)</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;article</span>
-  <span class="code-attr">wam-intent-category</span>=<span class="code-value">"api-spec"</span>
-  <span class="code-attr">wam-intent-importance</span>=<span class="code-value">"high"</span><span class="code-tag">&gt;</span>
+<pre><code><span class="code-comment">// Element attributes:</span>
+<span class="code-comment">// wam-intent-category="api-spec"</span>
+<span class="code-comment">// wam-intent-instruction="Simplify for a junior developer audience"</span>
+<span class="code-comment">// wam-intent-tone="casual"</span>
+<span class="code-comment">// wam-intent-output="bullet-points"</span>
 
-  <span class="code-tag">&lt;h2&gt;</span>POST /api/users<span class="code-tag">&lt;/h2&gt;</span>
-  <span class="code-tag">&lt;p&gt;</span>Creates a new user account.<span class="code-tag">&lt;/p&gt;</span>
-
-<span class="code-tag">&lt;/article&gt;</span></code></pre>
-          </div>
-          <div class="example-result">
-            <div class="example-result-label">Generated System Prompt Fragment:</div>
-<pre><code>Prioritize this content.
-This is an API specification. Treat it as authoritative technical reference.
-
-[Content follows...]</code></pre>
+<span class="code-comment">// Resolved Scoped Call Configuration Object (in Mutable Element Manifest):</span>
+{
+  "category": "api-spec",
+  "instruction": "Simplify for a junior developer audience",
+  "tone": "casual",
+  "output_format": "bullet-points"
+}</code></pre>
           </div>
         </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Scoped LLM Calls</div>
+          <p>
+            Not all mutation tool invocations trigger a scoped call. Only tool calls that
+            supply an <code>instruction</code> parameter (rather than a concrete <code>value</code>)
+            initiate an internal LLM call. The Scoped Call Configuration Object provides the
+            framing for that internal call, ensuring authors control how the LLM operates on
+            their element even when they don't control the mutation value directly.
+          </p>
+        </div>
+
+        <h3>Group B: <code>wam_invoke</code> Availability</h3>
+
+        <p>
+          Group B attributes (<code>function</code>, <code>workflow</code>) gate exposure of
+          the <code>wam_invoke</code> interaction tool. The rule is:
+        </p>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">wam_invoke Exposure Rule</div>
+          <p>
+            <code>wam_invoke</code> appears in <code>tools/list</code> for an element
+            <strong>if and only if</strong>:
+          </p>
+          <ol>
+            <li>The element's Effective Permission Set contains <code>interaction</code>
+                (from <code>wam-policy-output</code>), <strong>AND</strong></li>
+            <li>The element declares <code>wam-intent-function</code>
+                <strong>OR</strong> <code>wam-intent-workflow</code> (or both).</li>
+          </ol>
+          <p>
+            Either Group B attribute satisfies condition 2 (OR semantics). The policy
+            condition 1 always takes precedence &mdash; no <code>interaction</code>
+            permission means no <code>wam_invoke</code>, regardless of Group B.
+          </p>
+        </div>
+
+        <p>
+          When <code>wam_invoke</code> is exposed, its available parameters reflect what
+          Group B attributes are declared:
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Declared Attributes</th>
+              <th>wam_invoke Parameters Available</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>wam-intent-function="submit-form"</code> only</td>
+              <td><code>action: "submit-form"</code></td>
+            </tr>
+            <tr>
+              <td><code>wam-intent-workflow="checkout-step-2"</code> only</td>
+              <td><code>stage: "checkout-step-2"</code></td>
+            </tr>
+            <tr>
+              <td>Both attributes declared</td>
+              <td><code>action: "submit-form"</code>, <code>stage: "checkout-step-2"</code></td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <section id="tone-output">
-        <h2>Tone & Output Format</h2>
+        <h2>Tone &amp; Output Format <small>(Group A)</small></h2>
 
         <p>
-          Additional intent attributes control response style:
+          <code>wam-intent-tone</code> and <code>wam-intent-output</code> are Group A
+          attributes that populate fields in the Scoped Call Configuration Object. They direct
+          how a scoped LLM call should style its response.
         </p>
 
         <h3><code>wam-intent-tone</code></h3>
-        <p>Specifies the desired tone for LLM responses about this content.</p>
+        <p>Populates the <code>tone</code> field in the Scoped Call Configuration Object.</p>
 
         <pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">wam-intent-tone</span>=<span class="code-value">"formal"</span><span class="code-tag">&gt;</span>...</code></pre>
-        <p>Generates: <code>"Adopt a(n) formal tone."</code></p>
+        <p>Scoped Call Config: <code>{ ..., "tone": "formal" }</code></p>
 
         <h3><code>wam-intent-output</code></h3>
-        <p>Specifies the desired output format.</p>
+        <p>Populates the <code>output_format</code> field in the Scoped Call Configuration Object, specifying the desired response format for scoped LLM calls.</p>
 
         <pre><code><span class="code-tag">&lt;div</span> <span class="code-attr">wam-intent-output</span>=<span class="code-value">"bullet-points"</span><span class="code-tag">&gt;</span>...</code></pre>
-        <p>Generates: <code>"Format your response as bullet-points."</code></p>
+        <p>Scoped Call Config: <code>{ ..., "output_format": "bullet-points" }</code></p>
       </section>
 
       <section id="function-workflow">
-        <h2>Function & Workflow</h2>
+        <h2>Function &amp; Workflow <small>(Group B)</small></h2>
 
         <p>
-          For interactive applications, additional attributes describe UI behavior:
+          <code>wam-intent-function</code> and <code>wam-intent-workflow</code> are Group B
+          attributes. They do not configure scoped LLM calls &mdash; they control whether
+          <code>wam_invoke</code> is available for an element and what parameters it accepts.
         </p>
 
         <h3><code>wam-intent-function</code></h3>
-        <p>Describes what an interactive control does.</p>
+        <p>
+          Describes what an interactive control does. When present (together with
+          <code>interaction</code> output permission), the UA exposes <code>wam_invoke</code>
+          with an <code>action</code> parameter constrained to this value.
+        </p>
 
-        <pre><code><span class="code-tag">&lt;button</span> <span class="code-attr">wam-intent-function</span>=<span class="code-value">"submit-form"</span><span class="code-tag">&gt;</span>Submit<span class="code-tag">&lt;/button&gt;</span></code></pre>
-        <p>Generates: <code>"Use this control to submit-form."</code></p>
+        <pre><code><span class="code-tag">&lt;button</span>
+  <span class="code-attr">wam-policy-output</span>=<span class="code-value">"interaction"</span>
+  <span class="code-attr">wam-intent-function</span>=<span class="code-value">"submit-form"</span><span class="code-tag">&gt;</span>Submit<span class="code-tag">&lt;/button&gt;</span>
+
+<span class="code-comment">&lt;!-- wam_invoke is now available with: { action: "submit-form" } --&gt;</span></code></pre>
 
         <h3><code>wam-intent-workflow</code></h3>
-        <p>Indicates the current stage in a multi-step process.</p>
+        <p>
+          Indicates the current stage in a multi-step process. When present (together with
+          <code>interaction</code> output permission), the UA exposes <code>wam_invoke</code>
+          with a <code>stage</code> parameter constrained to this value.
+        </p>
 
-        <pre><code><span class="code-tag">&lt;section</span> <span class="code-attr">wam-intent-workflow</span>=<span class="code-value">"checkout-step-2"</span><span class="code-tag">&gt;</span>...</code></pre>
-        <p>Generates: <code>"(Workflow Stage: checkout-step-2)"</code></p>
+        <pre><code><span class="code-tag">&lt;section</span>
+  <span class="code-attr">wam-policy-output</span>=<span class="code-value">"interaction"</span>
+  <span class="code-attr">wam-intent-workflow</span>=<span class="code-value">"checkout-step-2"</span><span class="code-tag">&gt;</span>...
+
+<span class="code-comment">&lt;!-- wam_invoke is now available with: { stage: "checkout-step-2" } --&gt;</span></code></pre>
+
+        <div class="callout callout-warning">
+          <div class="callout-title"><code>interaction</code> Policy Required</div>
+          <p>
+            Group B attributes alone are not sufficient to expose <code>wam_invoke</code>.
+            The element's output policy must also include <code>interaction</code> (or
+            <code>mutable</code>, which includes all tokens). Without <code>interaction</code>
+            in the Effective Permission Set, <code>wam_invoke</code> is never offered even
+            if both Group B attributes are declared.
+          </p>
+        </div>
       </section>
 
       <div class="page-nav">

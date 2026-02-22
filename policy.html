@@ -48,6 +48,10 @@
         <a href="#output-style">style</a>
         <a href="#output-annotation">annotation</a>
         <a href="#output-content">content</a>
+        <a href="#output-layout">layout</a>
+        <a href="#output-append">append</a>
+        <a href="#output-data">data</a>
+        <a href="#output-interaction">interaction</a>
         <a href="#output-mutable">mutable</a>
       </nav>
     </aside>
@@ -116,7 +120,9 @@
         <h3 id="input-none">Token: <code>none</code></h3>
         <p>
           Completely hides the element and all its descendants from the LLM. The element is
-          omitted entirely from the context &mdash; as if it doesn't exist.
+          omitted entirely from the context &mdash; as if it doesn't exist. This also blocks
+          Scoped LLM Calls: a mutation tool that would read this element's content to make
+          an internal LLM call receives nothing and cannot proceed.
         </p>
 
         <div class="example-container">
@@ -255,15 +261,21 @@
         <h2>Output (Mutation Control)</h2>
 
         <p>
-          The <code>wam-policy-output</code> attribute controls what modifications the LLM
-          is permitted to make. By default, all content is <code>readonly</code>.
+          The <code>wam-policy-output</code> attribute serves a dual purpose in the
+          Tool Lifecycle Model: it both <strong>exposes MCP mutation tools</strong> to the
+          orchestrating LLM and <strong>constrains what operations those tools may perform</strong>.
+          Each token in the Effective Permission Set causes a specific mutation tool to appear
+          in <code>tools/list</code>; the UA blocks any mutation that falls outside the
+          permitted set. By default, all content is <code>readonly</code> &mdash; no mutation
+          tools are offered.
         </p>
 
         <h3 id="output-readonly">Token: <code>readonly</code></h3>
         <p>
-          No modifications permitted. This is the default behavior. The LLM can see
-          the content but cannot change anything.
+          No modifications permitted. This is the default behavior. The LLM can see the
+          content (subject to input policy), but no mutation tools are exposed for this element.
         </p>
+        <p><strong>Exposed MCP tool:</strong> none</p>
 
         <div class="example-container">
           <div class="example-header">Example: Protected Legal Content</div>
@@ -281,6 +293,7 @@
           The LLM can highlight content, change colors, or apply CSS classes, but cannot
           alter the actual text or structure.
         </p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_apply_style</code></p>
 
         <div class="example-container">
           <div class="example-header">Example: Theme-able Content</div>
@@ -300,6 +313,7 @@
           <code>&lt;span&gt;</code>, <code>&lt;abbr&gt;</code>, etc.) without changing the
           underlying text. This is "non-destructive" enhancement.
         </p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_annotate</code></p>
 
         <div class="example-container">
           <div class="example-header">Example: Annotatable Article</div>
@@ -321,6 +335,7 @@
           Allows direct modification of text nodes. The LLM can rewrite, summarize,
           translate, or otherwise change the actual content.
         </p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_set_content</code></p>
 
         <div class="callout callout-warning">
           <div class="callout-title">Use With Caution</div>
@@ -331,23 +346,32 @@
           </p>
         </div>
 
-        <h3>Token: <code>layout</code></h3>
+        <h3 id="output-layout">Token: <code>layout</code></h3>
         <p>Allows reordering of direct child elements. Useful for sortable lists.</p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_reorder_children</code></p>
 
-        <h3>Token: <code>append</code></h3>
+        <h3 id="output-append">Token: <code>append</code></h3>
         <p>Allows adding new child elements at the end, but not modifying existing content.</p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_append_child</code></p>
 
-        <h3>Token: <code>data</code></h3>
+        <h3 id="output-data">Token: <code>data</code></h3>
         <p>Allows modification of form values, data-* attributes, and structured data (JSON-LD).</p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_set_data</code></p>
 
-        <h3>Token: <code>interaction</code></h3>
-        <p>Allows modification of event handlers, ARIA states, and form state.</p>
+        <h3 id="output-interaction">Token: <code>interaction</code></h3>
+        <p>
+          Allows modification of event handlers, ARIA states, and form state. Also gates
+          exposure of <code>wam_invoke</code> when combined with Group B intent attributes
+          (<code>wam-intent-function</code> or <code>wam-intent-workflow</code>).
+        </p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_set_interaction</code> (plus <code>wam_invoke</code> when Group B attributes are present)</p>
 
         <h3 id="output-mutable">Token: <code>mutable</code></h3>
         <p>
-          Shorthand for all permissions. The LLM has complete control over this element.
+          Shorthand for all permissions. Exposes all seven mutation tools simultaneously.
           <strong>Use sparingly.</strong>
         </p>
+        <p><strong>Exposed MCP tools:</strong> <code>wam_set_content</code>, <code>wam_apply_style</code>, <code>wam_annotate</code>, <code>wam_reorder_children</code>, <code>wam_append_child</code>, <code>wam_set_data</code>, <code>wam_set_interaction</code></p>
 
         <h3>Output Token Hierarchy</h3>
 
@@ -384,7 +408,10 @@
 
         <p>
           The <code>wam-policy-memory</code> attribute controls whether and how long the
-          LLM can retain information from this content.
+          LLM can retain information from this content. Retention rules apply to
+          <strong>all WAM MCP tool calls</strong>, including Context Tools that read the
+          element and mutation tools that perform Scoped LLM Calls &mdash; the memory policy
+          governs the full content a tool observes, not only the mutation it produces.
         </p>
 
         <table>
