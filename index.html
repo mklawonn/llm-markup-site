@@ -13,6 +13,7 @@
     <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
+      <a href="lifecycle.html">Lifecycle</a>
       <a href="policy.html">Policy</a>
       <a href="intent.html">Intent</a>
       <a href="provenance.html">Provenance</a>
@@ -33,6 +34,7 @@
         <a href="#the-solution">The Solution</a>
         <a href="#key-concepts">Key Concepts</a>
         <a href="#key-concepts">Tool Lifecycle Model</a>
+        <a href="lifecycle.html">Lifecycle (Full Page)</a>
 
         <h3>Namespaces</h3>
         <a href="policy.html">WAM-Policy</a>
@@ -196,6 +198,66 @@
           </p>
         </div>
 
+        <h3>How It Works: MCP Tools as the Enforcement Layer</h3>
+
+        <p>
+          The User Agent enforces WAM through a concrete mechanism: it acts as an
+          <strong>internal MCP (Model Context Protocol) server</strong> that mediates
+          <em>every</em> interaction between the LLM and the page. The LLM never
+          touches the DOM directly &mdash; it can only act through
+          <strong>WAM MCP tools</strong> that the UA exposes and controls.
+        </p>
+
+        <div class="diagram">
+          <div class="diagram-flow">
+            <div class="diagram-box" style="background: var(--secondary); color: white;">LLM</div>
+            <div class="diagram-arrow">&harr;</div>
+            <div class="diagram-box" style="background: var(--primary); color: white;">MCP Client<br><small>(inside UA)</small></div>
+            <div class="diagram-arrow">&harr;</div>
+            <div class="diagram-box" style="background: var(--primary); color: white;">WAM MCP Server<br><small>(inside UA)</small></div>
+            <div class="diagram-arrow">&darr;</div>
+            <div class="diagram-box" style="background: var(--gray-200);">HTML DOM<br><small>WAM attributes checked</small></div>
+          </div>
+        </div>
+
+        <p>
+          This is the core of the standard. Each WAM namespace controls a different
+          aspect of this tool layer:
+        </p>
+
+        <ul>
+          <li>
+            <strong><code>wam-policy-output</code></strong> determines which elements appear in
+            each mutation tool's <code>selector</code> enum. Each output token (<code>style</code>,
+            <code>content</code>, <code>data</code>, etc.) maps to a specific MCP mutation tool.
+            An element's selector only appears in that tool's enum if the element's policy includes
+            the corresponding token &mdash; the LLM cannot form a valid call targeting any other element.
+          </li>
+          <li>
+            <strong><code>wam-policy-input</code></strong> filters what content the LLM receives
+            during session initialization and when calling context tools like
+            <code>wam_read_element</code>.
+          </li>
+          <li>
+            <strong><code>wam-intent-*</code></strong> populates the Mutable Element Manifest with
+            structured metadata (category, description, importance, entity) delivered to the LLM at
+            session initialization, and gates the <code>wam_invoke</code> interaction tool.
+          </li>
+          <li>
+            <strong><code>wam-provenance-*</code></strong> is written by the UA after every
+            successful tool call, creating an append-only audit trail of every mutation.
+          </li>
+        </ul>
+
+        <p>
+          The full lifecycle has two phases &mdash; <strong>Initialization</strong> and
+          <strong>Record</strong> &mdash; described in detail on the
+          <a href="lifecycle.html">Tool Lifecycle</a> page. Initialization runs once before
+          the LLM session begins: the UA resolves all WAM attributes, builds the tool set
+          and Mutable Element Manifest, and delivers everything to the LLM. Record governs
+          every subsequent mutation or invocation tool call.
+        </p>
+
         <div class="callout callout-warning">
           <div class="callout-title">Cooperative Standard</div>
           <p>
@@ -215,40 +277,32 @@
         <h3>Tool Lifecycle Model</h3>
 
         <p>
-          WAM is built around a <strong>Tool Lifecycle Model</strong>: every MCP mutation tool
-          call passes through three phases enforced by the User Agent before a DOM change occurs.
+          WAM is built around a <strong>Tool Lifecycle Model</strong> with two UA-enforced
+          phases. The LLM's reasoning between them is outside the standard's scope.
         </p>
 
         <div class="diagram">
           <table style="text-align: center;">
             <tr>
-              <td style="background: #fecaca; padding: 16px; width: 33%;">
-                <strong>Gate</strong><br>
-                <code>wam-policy-*</code><br>
+              <td style="background: #e0e7ff; padding: 16px; width: 44%;">
+                <strong>1. Initialization</strong><br>
+                <code>wam-policy-*</code> &amp; <code>wam-intent-*</code><br>
                 <small>
                   Which tools are offered?<br>
-                  What operations are permitted?<br>
-                  What content is visible?
+                  What selectors are in each enum?<br>
+                  What content is visible?<br>
+                  What metadata does each element carry?
                 </small>
               </td>
               <td style="font-size: 1.5rem; padding: 12px;">&rarr;</td>
-              <td style="background: #fef3c7; padding: 16px; width: 33%;">
-                <strong>Configure</strong><br>
-                <code>wam-intent-*</code><br>
-                <small>
-                  How should tools behave?<br>
-                  What is the Scoped Call Configuration?<br>
-                  Is <code>wam_invoke</code> available?
-                </small>
-              </td>
-              <td style="font-size: 1.5rem; padding: 12px;">&rarr;</td>
-              <td style="background: #d1fae5; padding: 16px; width: 33%;">
-                <strong>Record</strong><br>
+              <td style="background: #d1fae5; padding: 16px; width: 44%;">
+                <strong>2. Record</strong><br>
                 <code>wam-provenance-*</code><br>
                 <small>
                   Write the ledger entry.<br>
                   Update the operation attribute.<br>
-                  Then apply the DOM change.
+                  Then apply the DOM change.<br>
+                  Repeat for every tool call.
                 </small>
               </td>
             </tr>
@@ -256,14 +310,14 @@
         </div>
 
         <div class="callout callout-info">
-          <div class="callout-title">Discovery-First Protocol</div>
+          <div class="callout-title">UA-Initiated Discovery</div>
           <p>
-            Before mutation or interaction tools appear in <code>tools/list</code>, the LLM
-            MUST call <code>wam_build_context</code>. This context tool returns the
-            policy-filtered HTML fragment, composed system prompt, and the
-            <strong>Mutable Element Manifest</strong> &mdash; an enumeration of every element
-            for which at least one mutation tool is currently available, ordered by importance.
-            Only after this discovery call does the UA expose mutation and interaction tools.
+            Initialization is entirely UA-internal. Before the LLM session begins, the UA
+            filters the page by input policy, resolves all intent attributes, and builds the
+            <strong>Mutable Element Manifest</strong> &mdash; a structured enumeration of
+            every mutable element with its available tools and intent metadata. The LLM
+            receives this context and a fully populated <code>tools/list</code> before making
+            any call. No initial tool call is required.
           </p>
         </div>
 
@@ -277,7 +331,7 @@
         <div class="grid-3">
           <div class="card">
             <h4><span class="token token-output">wam-policy-*</span></h4>
-            <p><strong>Gate Phase</strong></p>
+            <p><strong>Phase 1: Initialization</strong></p>
             <p>
               Mechanistically enforced by the User Agent. Each output token exposes a specific
               MCP mutation tool and constrains what operations it may perform. Input tokens
@@ -288,18 +342,18 @@
 
           <div class="card">
             <h4><span class="token token-intent">wam-intent-*</span></h4>
-            <p><strong>Configure Phase</strong></p>
+            <p><strong>Phase 1: Initialization</strong></p>
             <p>
-              The UA resolves semantic markers into the Scoped Call Configuration Object
-              (Group A) and into <code>wam_invoke</code> availability signals (Group B).
-              Shapes how tools behave without filtering or blocking anything.
+                Populates the Mutable Element Manifest with structured metadata (category,
+              description, importance, entity) delivered to the LLM at session initialization.
+              Also gates <code>wam_invoke</code> availability.
             </p>
             <a href="intent.html" class="btn btn-secondary">Learn More &rarr;</a>
           </div>
 
           <div class="card">
             <h4><span class="token token-provenance">wam-provenance-*</span></h4>
-            <p><strong>Record Phase</strong></p>
+            <p><strong>Phase 2: Record</strong></p>
             <p>
               Written atomically by the UA after every mutation tool call, before the DOM
               change is applied. Tracks content sources, operation history, and model
@@ -323,16 +377,24 @@
         <h3>Inheritance</h3>
 
         <p>
-          Policies inherit from parent elements unless overridden locally:
+          Policies inherit from parent elements. A child&rsquo;s effective policy is the
+          <strong>intersection</strong> of its own declaration and what it inherits &mdash;
+          children can only <strong>restrict</strong> permissions, never expand them:
         </p>
 
-        <pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
-  <span class="code-comment">&lt;!-- Everything here is readonly by default --&gt;</span>
-  <span class="code-tag">&lt;p&gt;</span>Cannot be changed<span class="code-tag">&lt;/p&gt;</span>
+        <pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content style"</span><span class="code-tag">&gt;</span>
+  <span class="code-comment">&lt;!-- Inherits content + style --&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>Text and styling can be changed<span class="code-tag">&lt;/p&gt;</span>
 
-  <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
-    <span class="code-comment">&lt;!-- This section overrides the parent --&gt;</span>
-    <span class="code-tag">&lt;p&gt;</span>This CAN be changed<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-comment">&lt;!-- Child restricts down to style only --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>Only styling can change here<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Child tries to add layout &mdash; NOT granted --&gt;</span>
+  <span class="code-comment">&lt;!-- Effective: (content style) &amp;cap; (content layout) = content --&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content layout"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>Text can change, but layout is silently dropped<span class="code-tag">&lt;/p&gt;</span>
   <span class="code-tag">&lt;/div&gt;</span>
 <span class="code-tag">&lt;/main&gt;</span></code></pre>
 
@@ -395,7 +457,7 @@
           <div class="callout-title">Principle of Least Privilege</div>
           <p>
             The default configuration is maximally restrictive for mutations and data retention.
-            Authors must explicitly grant permissions. This follows security best practices.
+            Authors must explicitly grant permissions.
           </p>
         </div>
       </section>
@@ -403,29 +465,34 @@
       <section id="next-steps">
         <h2>Next Steps</h2>
 
-        <p>Ready to dive deeper? Start with the namespace that interests you most:</p>
+        <p>Ready to dive deeper? Start with the lifecycle model, then explore each namespace:</p>
 
-        <div class="grid-3">
+        <div class="grid-2">
+          <a href="lifecycle.html" class="card" style="text-decoration: none; color: inherit;">
+            <h4 style="color: var(--primary);">Tool Lifecycle &rarr;</h4>
+            <p>How MCP tools mediate every LLM interaction with the page</p>
+          </a>
+
           <a href="policy.html" class="card" style="text-decoration: none; color: inherit;">
             <h4 style="color: var(--danger);">WAM-Policy &rarr;</h4>
-            <p>Learn about visibility, mutation, and retention controls</p>
+            <p>Visibility, mutation, and retention controls</p>
           </a>
 
           <a href="intent.html" class="card" style="text-decoration: none; color: inherit;">
             <h4 style="color: var(--warning);">WAM-Intent &rarr;</h4>
-            <p>Learn about semantic categories and importance levels</p>
+            <p>Semantic categories, importance levels, and tool configuration</p>
           </a>
 
           <a href="provenance.html" class="card" style="text-decoration: none; color: inherit;">
             <h4 style="color: var(--secondary);">WAM-Provenance &rarr;</h4>
-            <p>Learn about source tracking and modification history</p>
+            <p>Source tracking and modification history</p>
           </a>
         </div>
       </section>
 
       <div class="page-nav">
         <span></span>
-        <a href="policy.html">Next: WAM-Policy Namespace &rarr;</a>
+        <a href="lifecycle.html">Next: Tool Lifecycle &rarr;</a>
       </div>
     </main>
 

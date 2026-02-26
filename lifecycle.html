@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Lifecycle - Web Agent Markup Tutorial</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Web Agent Markup Tutorial</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="lifecycle.html" style="color: white;">Lifecycle</a>
+      <a href="policy.html">Policy</a>
+      <a href="intent.html">Intent</a>
+      <a href="provenance.html">Provenance</a>
+      <a href="advanced.html">Advanced</a>
+      <a href="api.html">API Reference</a>
+    </nav>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+
+    <aside class="sidebar">
+      <nav>
+        <h3>Tool Lifecycle</h3>
+        <a href="#overview" class="active">Overview</a>
+        <a href="#two-phases">The Two Phases</a>
+        <a href="#initialization">Phase 1: Initialization</a>
+        <a href="#record-phase">Phase 2: Record</a>
+
+        <h3>Walkthrough</h3>
+        <a href="#walkthrough">Worked Example</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="namespace-header" style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
+        <h2>Tool Lifecycle Model</h2>
+        <p>How the User Agent mediates every LLM interaction with the page through MCP tools.</p>
+      </div>
+
+      <section id="overview">
+        <h2>Overview</h2>
+
+        <p>
+          The Tool Lifecycle Model is the <strong>core enforcement mechanism</strong> of Web Agent
+          Markup. Every LLM action on a document &mdash; reading content, modifying elements,
+          invoking controls &mdash; must occur through a defined <strong>WAM MCP tool</strong>.
+          The User Agent must not allow the LLM to observe or modify the document by any other
+          mechanism.
+        </p>
+
+        <p>
+          WAM governs two phases of every LLM session, one at the beginning and one at every
+          mutation. The three WAM namespaces map onto these phases:
+        </p>
+
+        <ul>
+          <li><strong>Policy</strong> attributes determine which tools are offered and what they can touch &mdash; resolved at initialization</li>
+          <li><strong>Intent</strong> attributes characterize each mutable element in the manifest &mdash; also resolved at initialization</li>
+          <li><strong>Provenance</strong> attributes are written by the UA atomically with each tool call &mdash; the Record phase</li>
+        </ul>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">No Direct DOM Access</div>
+          <p>
+            The LLM never has direct access to the DOM. Its view of the page comes entirely
+            from the filtered HTML fragment the UA delivers at initialization &mdash;
+            <code>wam-policy-input</code> controls what appears in that fragment, and the
+            same filtering applies when the LLM calls <code>wam_read_element</code>.
+            Changes can only be made through mutation tools gated by
+            <code>wam-policy-output</code>. This is what makes WAM policy enforcement
+            deterministic rather than probabilistic.
+          </p>
+        </div>
+      </section>
+
+      <section id="two-phases">
+        <h2>The Two Phases</h2>
+
+        <p>
+          A conforming User Agent implements an internal MCP server that sits between the LLM
+          and the page. The LLM interacts exclusively through tool calls. WAM enforces two
+          phases; the LLM's reasoning between them is outside the standard's scope:
+        </p>
+
+        <div class="diagram">
+          <table style="text-align: center;">
+            <tr>
+              <td style="background: #e0e7ff; padding: 20px; width: 44%;">
+                <strong style="font-size: 1.25rem;">1. Initialization</strong><br>
+                <code>wam-policy-*</code> &amp; <code>wam-intent-*</code><br><br>
+                <small>
+                  Which tools are offered?<br>
+                  What selectors are in each enum?<br>
+                  What content is visible?<br>
+                  What metadata does each element carry?
+                </small>
+              </td>
+              <td style="font-size: 1.5rem; padding: 12px;">&rarr;</td>
+              <td style="background: #d1fae5; padding: 20px; width: 44%;">
+                <strong style="font-size: 1.25rem;">2. Record</strong><br>
+                <code>wam-provenance-*</code><br><br>
+                <small>
+                  Write the Provenance Ledger entry.<br>
+                  Update <code>wam-provenance-operation</code>.<br>
+                  Then apply the DOM change.<br>
+                  Repeat for every tool call.
+                </small>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <p>
+          Initialization runs once, before the LLM session begins. Record runs for every
+          tool call that modifies the document &mdash; mutation tools and
+          <code>wam_invoke</code>. The LLM makes as many calls as needed; each one is
+          an independent Record phase execution. There is no unrecorded LLM-initiated change.
+        </p>
+      </section>
+
+      <section id="initialization">
+        <h2>Phase 1: Initialization</h2>
+
+        <p>
+          Before the LLM session begins, the UA runs <strong>context discovery</strong> and
+          delivers three things to the LLM as part of session setup:
+        </p>
+
+        <ol>
+          <li>
+            A <strong>filtered HTML fragment</strong> &mdash; the page after
+            <code>wam-policy-input</code> has been applied. Elements with
+            <code>input="none"</code> are omitted entirely; elements with
+            <code>input="structure"</code> have their text replaced with
+            <code>[REDACTED]</code>.
+          </li>
+          <li>
+            A <strong>composed system prompt</strong> &mdash; assembled from
+            <code>wam-intent-*</code> attributes across the page.
+          </li>
+          <li>
+            The <strong>Mutable Element Manifest</strong> &mdash; a structured list of
+            every element for which at least one mutation or interaction tool is available,
+            including which tools apply and what intent metadata each element carries
+            (<code>category</code>, <code>description</code>, <code>importance</code>,
+            <code>entity</code>).
+          </li>
+        </ol>
+
+        <p>
+          Alongside the context, the UA builds <code>tools/list</code>. For each mutation and
+          interaction tool, the UA collects the selectors of every element whose policy permits
+          it. If at least one exists, the tool appears in <code>tools/list</code> with its
+          <code>selector</code> parameter constrained to a JSON Schema <code>enum</code> of
+          exactly those selectors. A tool with no permitted elements is omitted entirely.
+          The LLM cannot form a valid call targeting an element the tool does not permit.
+        </p>
+
+        <p>
+          <code>wam-intent-*</code> attributes are fully resolved at this stage. They do not
+          gate tool calls at call time &mdash; their work is done here, populating the manifest
+          and determining <code>wam_invoke</code> availability.
+        </p>
+
+        <p>
+          <code>tools/list</code> is stable for the duration of the session. If a DOM
+          modification invalidates the current selectors, the UA re-runs context discovery
+          and rebuilds <code>tools/list</code> before accepting further tool calls.
+        </p>
+
+        <div class="callout callout-danger">
+          <div class="callout-title">Visibility Is a Prerequisite for Mutability</div>
+          <p>
+            An element with <code>wam-policy-input="none"</code> is invisible to the LLM
+            regardless of its <code>wam-policy-output</code> value. It is absent from the
+            filtered HTML and from the Mutable Element Manifest, so its selector never
+            appears in any tool's enum. The LLM cannot discover the element exists and
+            therefore cannot target it.
+          </p>
+        </div>
+      </section>
+
+      <section id="record-phase">
+        <h2>Phase 2: Record</h2>
+
+        <p>
+          Every tool call that modifies the document is executed atomically with a
+          <strong>Provenance Ledger write</strong>. The UA writes the ledger entry and
+          appends a <code>&lt;layer&gt;:&lt;explanation&gt;</code> token to the element's
+          <code>wam-provenance-operation</code> attribute <em>before</em> applying the
+          DOM change. The ledger write and DOM application are atomic: either both occur
+          or neither does. There are no unrecorded LLM-initiated changes.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>id</code>, <code>timestamp</code>, <code>target</code></td>
+              <td>Entry identity and location</td>
+            </tr>
+            <tr>
+              <td><code>layer</code></td>
+              <td><code>content</code>, <code>style</code>, <code>interaction</code>, <code>topology</code>, <code>data</code>, or <code>intent</code></td>
+            </tr>
+            <tr>
+              <td><code>explanation</code></td>
+              <td>Why the LLM made this change</td>
+            </tr>
+            <tr>
+              <td><code>originalValue</code>, <code>newValue</code></td>
+              <td>Before and after values</td>
+            </tr>
+            <tr>
+              <td><code>orchestratingModelId</code></td>
+              <td>The model that issued the tool call</td>
+            </tr>
+            <tr>
+              <td><code>generatingModelId</code></td>
+              <td>The model that produced the content when the UA delegated to an external service; omitted when the orchestrating model provided the value directly</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          The UA executes in strict order:
+          <strong>Verify</strong> the selector resolves and the session is current &rarr;
+          <strong>Execute</strong> the mutation in memory &rarr;
+          <strong>Write</strong> the Provenance Ledger entry &rarr;
+          <strong>Append</strong> the <code>&lt;layer&gt;:&lt;explanation&gt;</code> token to
+          <code>wam-provenance-operation</code> &rarr;
+          <strong>Apply</strong> to the live DOM &rarr;
+          <strong>Return</strong> success.
+        </p>
+
+        <p>
+          This sequence applies equally to mutation tools and to <code>wam_invoke</code>.
+          An invoked control is recorded with layer <code>interaction</code> before the
+          invocation is dispatched to the page.
+        </p>
+      </section>
+
+      <section id="walkthrough">
+        <h2>Worked Example: Annotation Tool Call</h2>
+
+        <p>
+          Here is a complete walkthrough of a single tool call passing through both phases.
+        </p>
+
+        <h3>Setup</h3>
+
+        <div class="example-container">
+          <div class="example-header">Page Markup</div>
+          <div class="example-code">
+<pre><code><span class="code-tag">&lt;article</span> <span class="code-attr">id</span>=<span class="code-value">"news-story"</span>
+         <span class="code-attr">wam-policy-input</span>=<span class="code-value">"all"</span>
+         <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation style"</span>
+         <span class="code-attr">wam-intent-category</span>=<span class="code-value">"summary"</span>
+         <span class="code-attr">wam-intent-description</span>=<span class="code-value">"Central bank rate cut story — wrap key economic terms in &lt;mark&gt; elements when annotating"</span>
+         <span class="code-attr">wam-provenance-source</span>=<span class="code-value">"https://news.example.com/story/42"</span><span class="code-tag">&gt;</span>
+  <span class="code-tag">&lt;p&gt;</span>
+    The central bank announced a 25 basis point rate cut on Tuesday,
+    citing weakening consumer spending and a cooling labor market.
+  <span class="code-tag">&lt;/p&gt;</span>
+<span class="code-tag">&lt;/article&gt;</span></code></pre>
+          </div>
+        </div>
+
+        <p>
+          A user asks their browser agent: <em>&ldquo;Highlight the key economic terms in this article.&rdquo;</em>
+        </p>
+
+        <h3>Step 1: Initialization (UA-Internal)</h3>
+
+        <p>
+          Before the LLM session begins, the UA runs context discovery. The input policy is
+          <code>all</code>, so the full article text is visible. The output policy grants
+          <code>annotation</code> and <code>style</code>, so the UA includes
+          <code>wam_annotate</code> and <code>wam_apply_style</code> in <code>tools/list</code>
+          with <code>#news-story</code> in each selector enum. The UA delivers the filtered
+          HTML, composed system prompt, and Mutable Element Manifest to the LLM:
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">Manifest Entry for #news-story</div>
+          <div class="example-code">
+<pre><code>{
+  "selector": "#news-story",
+  "wam_id": "news-story",
+  "available_tools": ["wam_annotate", "wam_apply_style"],
+  "intent": {
+    "category": "summary",
+    "description": "Central bank rate cut story — wrap key economic terms in &lt;mark&gt; elements when annotating"
+  },
+  "provenance": {
+    "source": "https://news.example.com/story/42"
+  }
+}</code></pre>
+          </div>
+        </div>
+
+        <p>
+          The LLM now knows: it can annotate and style this element, but not rewrite its text.
+          It also knows the element's semantic category and the developer's description of
+          what annotation is appropriate.
+        </p>
+
+        <h3>Step 2: Tool Call</h3>
+
+        <p>
+          Guided by the manifest context and the user's request, the LLM composes the
+          annotated HTML and calls <code>wam_annotate</code> with the result directly:
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">LLM Tool Call</div>
+          <div class="example-code">
+<pre><code>wam_annotate({
+  selector: "#news-story",
+  value: "&lt;p&gt;The &lt;mark&gt;central bank&lt;/mark&gt; announced a &lt;mark&gt;25 basis point rate cut&lt;/mark&gt;...&lt;/p&gt;",
+  explanation: "highlighted-economic-terms"
+})</code></pre>
+          </div>
+        </div>
+
+        <p>
+          The UA validates the supplied value is non-destructive: the
+          <code>textContent</code> of the element is unchanged. Only inline wrapper elements
+          have been added.
+        </p>
+
+        <h3>Step 3: Record Phase</h3>
+
+        <p>Before applying the DOM change, the UA writes a Provenance Ledger entry:</p>
+
+        <div class="example-container">
+          <div class="example-header">Ledger Entry</div>
+          <div class="example-code">
+<pre><code>{
+  "id": "entry-001",
+  "timestamp": "2025-07-11T14:30:00Z",
+  "target": "#news-story",
+  "layer": "content",
+  "explanation": "highlighted-economic-terms",
+  "originalValue": "&lt;p&gt;The central bank announced...",
+  "newValue": "&lt;p&gt;The &lt;mark&gt;central bank&lt;/mark&gt; announced...",
+  "orchestratingModelId": "claude-opus-4-6"
+}</code></pre>
+          </div>
+        </div>
+
+        <p>
+          The UA appends <code>content:highlighted-economic-terms</code> to the element's
+          <code>wam-provenance-operation</code> attribute, then applies the mutation to
+          the live DOM.
+        </p>
+
+        <h3>Step 4: DOM Applied</h3>
+
+        <p>
+          The mutation is applied to the live DOM. The element now contains
+          <code>&lt;mark&gt;</code>-wrapped terms. The user sees highlighted economic terminology,
+          the original text is unchanged, and the provenance is recorded.
+        </p>
+
+        <div class="callout callout-success">
+          <div class="callout-title">Both Phases in Action</div>
+          <p>
+            <strong>Initialization</strong> determined which tools were available and delivered
+            the element's intent metadata to the LLM (<code>summary</code> category,
+            developer description). <strong>Record</strong> ensured the mutation was committed
+            atomically with its provenance entry. The LLM's reasoning &mdash; reading the
+            context and deciding what annotation to produce &mdash; happened between the two
+            phases, outside WAM's scope.
+          </p>
+        </div>
+      </section>
+
+      <div class="page-nav">
+        <a href="index.html">&larr; Previous: Introduction</a>
+        <a href="policy.html">Next: WAM-Policy Namespace &rarr;</a>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>
+      Web Agent Markup Tutorial &mdash; Based on the
+      <a href="https://github.com/example/web-agent-markup">Web Agent Markup Specification</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

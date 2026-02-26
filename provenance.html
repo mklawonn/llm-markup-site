@@ -13,6 +13,7 @@
     <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
+      <a href="lifecycle.html">Lifecycle</a>
       <a href="policy.html">Policy</a>
       <a href="intent.html">Intent</a>
       <a href="provenance.html" style="color: white;">Provenance</a>
@@ -482,12 +483,7 @@
             <tr>
               <td><code>generatingModelId</code></td>
               <td>String?</td>
-              <td>Identifier of the LLM whose output became the new value; only populated when <code>scopedCall</code> is <code>true</code> and the generating model differs from the orchestrating model</td>
-            </tr>
-            <tr>
-              <td><code>scopedCall</code></td>
-              <td>Boolean</td>
-              <td>Whether this mutation resulted from a Scoped LLM Call (internal LLM invocation by a mutation tool). When <code>true</code>, both model IDs MUST be populated.</td>
+              <td>Identifier of the model that produced the mutation value when the UA delegated to an external service (e.g. a browser UA calling a Gemini API). Omitted when the orchestrating model provided the value directly.</td>
             </tr>
           </tbody>
         </table>

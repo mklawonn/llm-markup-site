@@ -1,6 +1,10 @@
 # Web Agent Markup Site
 
+[![Status: Alpha](https://img.shields.io/badge/Status-Alpha-orange.svg)]()
+
 This is a static site tutorial for Web Agent Markup.
+
+> **This tutorial covers a standard under active development.** Content may change as the specification evolves.
 
 ## How to Serve
 

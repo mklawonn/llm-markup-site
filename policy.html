@@ -13,6 +13,7 @@
     <h1>Web Agent Markup Tutorial</h1>
     <nav>
       <a href="index.html">Home</a>
+      <a href="lifecycle.html">Lifecycle</a>
       <a href="policy.html" style="color: white;">Policy</a>
       <a href="intent.html">Intent</a>
       <a href="provenance.html">Provenance</a>
@@ -51,6 +52,7 @@
         <a href="#output-layout">layout</a>
         <a href="#output-append">append</a>
         <a href="#output-data">data</a>
+        <a href="#output-intent">intent</a>
         <a href="#output-interaction">interaction</a>
         <a href="#output-mutable">mutable</a>
       </nav>
@@ -120,9 +122,9 @@
         <h3 id="input-none">Token: <code>none</code></h3>
         <p>
           Completely hides the element and all its descendants from the LLM. The element is
-          omitted entirely from the context &mdash; as if it doesn't exist. This also blocks
-          Scoped LLM Calls: a mutation tool that would read this element's content to make
-          an internal LLM call receives nothing and cannot proceed.
+          omitted entirely from the filtered HTML fragment and from the Mutable Element Manifest
+          &mdash; as if it doesn't exist. Its selector never appears in any tool's enum, so it
+          cannot be targeted.
         </p>
 
         <div class="example-container">
@@ -261,12 +263,11 @@
         <h2>Output (Mutation Control)</h2>
 
         <p>
-          The <code>wam-policy-output</code> attribute serves a dual purpose in the
-          Tool Lifecycle Model: it both <strong>exposes MCP mutation tools</strong> to the
-          orchestrating LLM and <strong>constrains what operations those tools may perform</strong>.
-          Each token in the Effective Permission Set causes a specific mutation tool to appear
-          in <code>tools/list</code>; the UA blocks any mutation that falls outside the
-          permitted set. By default, all content is <code>readonly</code> &mdash; no mutation
+          The <code>wam-policy-output</code> attribute controls which mutation tools appear
+          in <code>tools/list</code> and which element selectors each tool's enum contains.
+          Each token in the Effective Permission Set causes a specific mutation tool to list
+          the element's selector in its enum; a tool with no permitted selectors is omitted
+          entirely. By default, all content is <code>readonly</code> &mdash; no mutation
           tools are offered.
         </p>
 
@@ -351,8 +352,8 @@
         <p><strong>Exposed MCP tool:</strong> <code>wam_reorder_children</code></p>
 
         <h3 id="output-append">Token: <code>append</code></h3>
-        <p>Allows adding new child elements at the end, but not modifying existing content.</p>
-        <p><strong>Exposed MCP tool:</strong> <code>wam_append_child</code></p>
+        <p>Allows inserting new nodes at any of four positions relative to the element: as a preceding sibling (<code>"before"</code>), following sibling (<code>"after"</code>), first child (<code>"first-child"</code>), or last child (<code>"last-child"</code>). Does not permit modifying or removing existing nodes.</p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_insert</code></p>
 
         <h3 id="output-data">Token: <code>data</code></h3>
         <p>Allows modification of form values, data-* attributes, and structured data (JSON-LD).</p>
@@ -361,17 +362,39 @@
         <h3 id="output-interaction">Token: <code>interaction</code></h3>
         <p>
           Allows modification of event handlers, ARIA states, and form state. Also gates
-          exposure of <code>wam_invoke</code> when combined with Group B intent attributes
-          (<code>wam-intent-function</code> or <code>wam-intent-workflow</code>).
+          exposure of <code>wam_invoke</code> when the element also declares
+          <code>wam-intent-function</code> or <code>wam-intent-workflow</code>.
         </p>
-        <p><strong>Exposed MCP tool:</strong> <code>wam_set_interaction</code> (plus <code>wam_invoke</code> when Group B attributes are present)</p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_set_interaction</code> (plus <code>wam_invoke</code> when <code>wam-intent-function</code> or <code>wam-intent-workflow</code> is present)</p>
+
+        <h3 id="output-intent">Token: <code>intent</code></h3>
+        <p>
+          Allows the LLM to set or update the element's semantic metadata attributes:
+          <code>wam-intent-category</code>, <code>wam-intent-description</code>,
+          <code>wam-intent-importance</code>, and <code>wam-intent-entity</code>.
+          This is most useful on elements the LLM has inserted, letting it record why the
+          element was created and how it should be treated. The tool availability signals
+          (<code>wam-intent-function</code>, <code>wam-intent-workflow</code>) are not
+          writable by the LLM.
+        </p>
+        <p><strong>Exposed MCP tool:</strong> <code>wam_set_intent</code></p>
+
+        <div class="example-container">
+          <div class="example-header">Example: LLM-annotated inserted element</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Author grants insert + intent on the container --&gt;</span>
+<span class="code-tag">&lt;section</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"append intent"</span><span class="code-tag">&gt;</span>
+  <span class="code-comment">&lt;!-- LLM inserts a new element, then labels it --&gt;</span>
+<span class="code-tag">&lt;/section&gt;</span></code></pre>
+          </div>
+        </div>
 
         <h3 id="output-mutable">Token: <code>mutable</code></h3>
         <p>
-          Shorthand for all permissions. Exposes all seven mutation tools simultaneously.
+          Shorthand for all permissions. Exposes all eight mutation tools simultaneously.
           <strong>Use sparingly.</strong>
         </p>
-        <p><strong>Exposed MCP tools:</strong> <code>wam_set_content</code>, <code>wam_apply_style</code>, <code>wam_annotate</code>, <code>wam_reorder_children</code>, <code>wam_append_child</code>, <code>wam_set_data</code>, <code>wam_set_interaction</code></p>
+        <p><strong>Exposed MCP tools:</strong> <code>wam_set_content</code>, <code>wam_apply_style</code>, <code>wam_annotate</code>, <code>wam_reorder_children</code>, <code>wam_insert</code>, <code>wam_set_data</code>, <code>wam_set_interaction</code>, <code>wam_set_intent</code></p>
 
         <h3>Output Token Hierarchy</h3>
 
@@ -410,8 +433,8 @@
           The <code>wam-policy-memory</code> attribute controls whether and how long the
           LLM can retain information from this content. Retention rules apply to
           <strong>all WAM MCP tool calls</strong>, including Context Tools that read the
-          element and mutation tools that perform Scoped LLM Calls &mdash; the memory policy
-          governs the full content a tool observes, not only the mutation it produces.
+          element &mdash; the memory policy governs the full content a tool observes,
+          not only the mutation it produces.
         </p>
 
         <table>
@@ -522,34 +545,82 @@
         </p>
 
         <div class="example-container">
-          <div class="example-header">Example: Inheritance and Override</div>
+          <div class="example-header">Example: Inheritance Uses Intersection (Children Can Only Restrict)</div>
           <div class="example-code">
-<pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"readonly"</span><span class="code-tag">&gt;</span>
-  <span class="code-comment">&lt;!-- Inherits readonly --&gt;</span>
+<pre><code><span class="code-tag">&lt;main</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content style"</span><span class="code-tag">&gt;</span>
+  <span class="code-comment">&lt;!-- Inherits content + style --&gt;</span>
   <span class="code-tag">&lt;section&gt;</span>
-    <span class="code-tag">&lt;p&gt;</span>This is readonly.<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;p&gt;</span>Text and styling can be changed here.<span class="code-tag">&lt;/p&gt;</span>
 
-    <span class="code-comment">&lt;!-- Local override --&gt;</span>
-    <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>
-      <span class="code-tag">&lt;p&gt;</span>This can be edited.<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-comment">&lt;!-- Child restricts to style only (content is removed) --&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"style"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>Only styling can change here. Text is protected.<span class="code-tag">&lt;/p&gt;</span>
+    <span class="code-tag">&lt;/div&gt;</span>
+
+    <span class="code-comment">&lt;!-- Child attempts to add layout &mdash; BLOCKED --&gt;</span>
+    <span class="code-comment">&lt;!-- Effective: (content style) &cap; (content layout) = content --&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content layout"</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;p&gt;</span>Text can change, but layout is NOT granted.<span class="code-tag">&lt;/p&gt;</span>
     <span class="code-tag">&lt;/div&gt;</span>
   <span class="code-tag">&lt;/section&gt;</span>
 <span class="code-tag">&lt;/main&gt;</span></code></pre>
+          </div>
+          <div class="example-result">
+            <div class="example-result-label">Effective policies after intersection:</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Element</th>
+                  <th>Declared</th>
+                  <th>Inherited</th>
+                  <th>Effective (intersection)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>&lt;main&gt;</code></td>
+                  <td><code>content style</code></td>
+                  <td>&mdash;</td>
+                  <td><code>content style</code></td>
+                </tr>
+                <tr>
+                  <td><code>&lt;section&gt;</code></td>
+                  <td><em>(none)</em></td>
+                  <td><code>content style</code></td>
+                  <td><code>content style</code></td>
+                </tr>
+                <tr>
+                  <td>First <code>&lt;div&gt;</code></td>
+                  <td><code>style</code></td>
+                  <td><code>content style</code></td>
+                  <td><code>style</code></td>
+                </tr>
+                <tr>
+                  <td>Second <code>&lt;div&gt;</code></td>
+                  <td><code>content layout</code></td>
+                  <td><code>content style</code></td>
+                  <td><code>content</code></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
         <div class="callout callout-warning">
           <div class="callout-title">Restriction Only</div>
           <p>
-            A child can only <strong>restrict</strong> permissions, not expand them beyond
-            what the Global Policy allows. See <a href="advanced.html#global-policy">Global Policy</a>
+            A child element's effective policy is the <strong>intersection</strong> of its own
+            declaration and its inherited context. This means a child can only
+            <strong>restrict</strong> permissions, never expand them. Declaring a token that
+            the parent does not grant has no effect &mdash; the UA silently drops it.
+            See <a href="advanced.html#global-policy">Global Policy</a>
             for document-level constraints.
           </p>
         </div>
       </section>
 
       <div class="page-nav">
-        <a href="index.html">&larr; Previous: Introduction</a>
+        <a href="lifecycle.html">&larr; Previous: Tool Lifecycle</a>
         <a href="intent.html">Next: WAM-Intent Namespace &rarr;</a>
       </div>
     </main>
