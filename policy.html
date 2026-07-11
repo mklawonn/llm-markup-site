@@ -19,6 +19,7 @@
       <a href="provenance.html">Provenance</a>
       <a href="advanced.html">Advanced</a>
       <a href="api.html">API Reference</a>
+      <a href="examples.html">Examples</a>
     </nav>
   </div>
 </header>
@@ -411,7 +412,8 @@
             </tr>
             <tr>
               <td colspan="2" style="background: #d1fae5;"><code>annotation</code></td>
-              <td colspan="2" style="background: #d1fae5;"><code>data</code></td>
+              <td style="background: #d1fae5;"><code>data</code></td>
+              <td style="background: #d1fae5;"><code>intent</code></td>
             </tr>
             <tr>
               <td colspan="4" style="background: #dbeafe;"><code>style</code></td>
@@ -421,7 +423,10 @@
             </tr>
           </table>
           <p style="margin-top: 12px; color: var(--gray-600); font-size: 0.875rem;">
-            Lower tokens are subsets of higher ones. <code>mutable</code> includes all permissions.
+            Each token is an independent capability mapping to one mutation tool; tokens
+            combine additively (by union), so a policy grants exactly the tools it lists.
+            <code>readonly</code> is the default (the empty set &mdash; no mutation tools), and
+            <code>mutable</code> is shorthand for all of them.
           </p>
         </div>
       </section>

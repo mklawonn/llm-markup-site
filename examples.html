@@ -19,6 +19,7 @@
       <a href="provenance.html">Provenance</a>
       <a href="advanced.html">Advanced</a>
       <a href="api.html">API Reference</a>
+      <a href="examples.html" style="color: white;">Examples</a>
     </nav>
   </div>
 </header>
@@ -84,7 +85,7 @@
   <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"article-body"</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"annotation style"</span><span class="code-tag">&gt;</span>
     <span class="code-tag">&lt;p&gt;</span>
       In a keynote presentation that lasted over two hours, CEO
-      <span class="code-tag">&lt;span</span> <span class="code-attr">wam-intent-entity</span>=<span class="code-value">"https://wikidata.org/wiki/Q..."</span><span class="code-tag">&gt;</span>
+      <span class="code-tag">&lt;span</span> <span class="code-attr">wam-intent-entity</span>=<span class="code-value">"https://wikidata.org/wiki/Q302057"</span><span class="code-tag">&gt;</span>
         John Doe
       <span class="code-tag">&lt;/span&gt;</span>
       demonstrated the new features to an audience of thousands.
@@ -349,6 +350,45 @@ console.log(user.id);
     Send Message
   <span class="code-tag">&lt;/button&gt;</span>
 <span class="code-tag">&lt;/form&gt;</span></code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section id="web-component">
+        <h2>Web Component</h2>
+
+        <p>
+          A custom element with a declarative shadow root. A shadow root is a policy
+          boundary and is isolated by default; the component opts in to the page's policy
+          with <code>wam-policy-inherit</code>. Internal nodes can still restrict themselves
+          regardless of what the page allows.
+        </p>
+
+        <div class="example-container">
+          <div class="example-header">web-component.html</div>
+          <div class="example-code">
+<pre><code><span class="code-comment">&lt;!-- Page grants content editing by default --&gt;</span>
+<span class="code-tag">&lt;main</span> <span class="code-attr">wam-policy-output</span>=<span class="code-value">"content annotation"</span><span class="code-tag">&gt;</span>
+
+  <span class="code-comment">&lt;!-- Custom element with a declarative shadow root --&gt;</span>
+  <span class="code-tag">&lt;profile-card&gt;</span>
+    <span class="code-tag">&lt;template</span> <span class="code-attr">shadowrootmode</span>=<span class="code-value">"open"</span> <span class="code-attr">wam-policy-inherit</span>=<span class="code-value">"output"</span><span class="code-tag">&gt;</span>
+      <span class="code-comment">&lt;!-- Opts in to the page's output policy (content annotation) --&gt;</span>
+      <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-value">"body"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;slot</span> <span class="code-attr">name</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;&lt;/slot&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+
+      <span class="code-comment">&lt;!-- Component internal: hidden regardless of page policy --&gt;</span>
+      <span class="code-tag">&lt;div</span> <span class="code-attr">wam-policy-input</span>=<span class="code-value">"none"</span><span class="code-tag">&gt;</span>
+        <span class="code-tag">&lt;p&gt;</span>Internal token: secret123<span class="code-tag">&lt;/p&gt;</span>
+      <span class="code-tag">&lt;/div&gt;</span>
+    <span class="code-tag">&lt;/template&gt;</span>
+
+    <span class="code-comment">&lt;!-- Light-DOM content projected into the slots --&gt;</span>
+    <span class="code-tag">&lt;span</span> <span class="code-attr">slot</span>=<span class="code-value">"title"</span><span class="code-tag">&gt;</span>Public Profile<span class="code-tag">&lt;/span&gt;</span>
+    <span class="code-tag">&lt;p</span> <span class="code-attr">slot</span>=<span class="code-value">"content"</span><span class="code-tag">&gt;</span>This content can be edited by the LLM.<span class="code-tag">&lt;/p&gt;</span>
+  <span class="code-tag">&lt;/profile-card&gt;</span>
+<span class="code-tag">&lt;/main&gt;</span></code></pre>
           </div>
         </div>
       </section>
