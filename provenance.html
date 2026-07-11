@@ -688,7 +688,7 @@
           The User Agent fires events that pages can listen to:
         </p>
 
-        <h3><code>llmprovenancechange</code></h3>
+        <h3><code>wamprovenancechange</code></h3>
 
         <p>
           Fired at the end of the Record phase execution sequence &mdash; after the Provenance
@@ -696,13 +696,13 @@
           has been updated, but before the mutation is applied to the live DOM.
         </p>
 
-        <pre><code>document.addEventListener('llmprovenancechange', (event) => {
+        <pre><code>document.addEventListener('wamprovenancechange', (event) => {
   console.log('Modified:', event.target);
   console.log('Layer:', event.layer);
   console.log('Explanation:', event.explanation);
 });</code></pre>
 
-        <h3><code>llmintegrityviolation</code></h3>
+        <h3><code>wamintegrityviolation</code></h3>
 
         <p>
           Fired when an integrity violation is detected. This event has two sources:
@@ -716,7 +716,7 @@
               violation and fires the event with the same semantics.</li>
         </ul>
 
-        <pre><code>document.addEventListener('llmintegrityviolation', (event) => {
+        <pre><code>document.addEventListener('wamintegrityviolation', (event) => {
   console.error('Violation on:', event.target);
   console.error('Type:', event.violationType);
   console.error('Reverted:', event.reverted);
